@@ -7,13 +7,14 @@ from torch.autograd import Variable
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import utils
-from matplotlib import pyplot as plt
+import warnings
+warnings.filterwarnings('ignore')
 
 
 class Net(nn.Module):
     def __init__(self, num_classes):
         super(Net, self).__init__()
-        
+
         self.features = nn.Sequential(  # input size=227*227
             nn.Conv2d(3, 96, kernel_size=11, stride=4, padding=2),
             nn.ReLU(inplace=True),
@@ -29,7 +30,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
-        self.classifier= nn.Sequential(
+        self.classifier = nn.Sequential(
             nn.Dropout(),
             nn.Linear(6 * 6 * 256, 4096),
             nn.ReLU(inplace=True),
@@ -38,7 +39,7 @@ class Net(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(4096, num_classes),
         )
-        
+
         utils.initialize_weights(self)
 
     def forward(self, x):
@@ -80,10 +81,12 @@ class CNN(object):
                 transforms.ToTensor()
             ]),
         }
-        dataset = {x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transforms[x])
-                   for x in ['train', 'test']}
-        self.dataloaders = {x: DataLoader(dataset[x], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-                            for x in ['train', 'test']}
+        dataset = {
+        x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transforms[x])
+        for x in ['train', 'test']}
+        self.dataloaders = {
+        x: DataLoader(dataset[x], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        for x in ['train', 'test']}
         dataset_size = {x: len(dataset[x]) for x in ['train', 'test']}
 
         # construct model
@@ -133,7 +136,7 @@ class CNN(object):
                 self.optimizer.step()
 
                 # ----check train result---- #
-                if(iB % 100 == 0) and (epoch % 1 == 0):
+                if (iB % 100 == 0) and (epoch % 1 == 0):
                     print('[E%03d]' % (epoch) + '\tloss: %.6f' % (loss.item()))
 
             # self.visualize_result(epoch, self.z)
@@ -161,3 +164,25 @@ class CNN(object):
 
     def load(self):
         self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model.pkl')))
+
+    def test(self):
+        self.net.eval()
+        self.load()
+
+        test_loss, correct = 0, 0
+        with torch.no_grad():
+            for img, target in self.dataloaders['test']:
+                if self.gpu_mode:
+                    img, target = Variable(img.cuda(), Variable(target.cuda()))
+                else:
+                    img, target = Variable(img), Variable(target)
+                output = self.net(img)
+                test_loss += self.CE_loss(output, target).item()
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+
+        test_loss /= len(self.dataloaders['test'].dataset)
+
+        print('Average loss: %f' % test_loss,
+              "Accuracy: %d/%d (%f)" % (correct, len(self.dataloaders['test'].dataset),
+                                        100. * correct / len(self.dataloaders['test'].dataset)))
