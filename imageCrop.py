@@ -38,7 +38,7 @@ for img_name in image_list:
             ContourArea_max_result = cnt
 
         if rectangle_area > RectangleArea_max :
-            RectangleArea_max = contour_area
+            RectangleArea_max = rectangle_area
             RectangleArea_max_result = cnt
 
     x, y, w, h = cv.boundingRect(ContourArea_max_result)
@@ -68,7 +68,7 @@ for img_name in image_list:
             ContourArea_max_result = cnt
 
         if rectangle_area > RectangleArea_max:
-            RectangleArea_max = contour_area
+            RectangleArea_max = rectangle_area
             RectangleArea_max_result = cnt
 
     x, y, w, h = cv.boundingRect(ContourArea_max_result)
@@ -99,7 +99,7 @@ for img_name in image_list:
             ContourArea_max_result = cnt
 
         if rectangle_area > RectangleArea_max:
-            RectangleArea_max = contour_area
+            RectangleArea_max = rectangle_area
             RectangleArea_max_result = cnt
 
     x, y, w, h = cv.boundingRect(ContourArea_max_result)
