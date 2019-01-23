@@ -3,10 +3,12 @@ import numpy as np
 import os
 
 path_dir = 'dataset'
+output_path = "output/"
 image_list = os.listdir(path_dir)
 
 for img_name in image_list:
-    img_color = final_img = cv.imread(path_dir+"/"+img_name)
+    img_color = cv.imread(path_dir+"/"+img_name)
+    final_img = img_color.copy()
     img_gray = cv.cvtColor(img_color, cv.COLOR_BGR2GRAY)
     img01 = img02 = img03 = img_color.copy()
 
@@ -21,15 +23,15 @@ for img_name in image_list:
 
         x, y, w, h = cv.boundingRect(cnt)
         #cv.rectangle(img_color1, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #contour_area = cv.contourArea(cnt)
-        contour_area = w * h
+        contour_area = cv.contourArea(cnt)
+        #contour_area = w * h
         if contour_area > max :
             max = contour_area
             max_result = cnt
 
     x, y, w, h = cv.boundingRect(max_result)
     cv.rectangle(final_img, (x, y), (x + w, y + h), (255, 0, 0), 5)
-    cv.imwrite("output/"+img_name+"_01.jpg", img01[y:y+h, x:x+w])
+    cv.imwrite(output_path+img_name+"_01.jpg", img01[y:y+h, x:x+w])
 
     # 그레이 --> 컨투어
     ret, img_binary = cv.threshold(img_gray, 127, 255, 0)
@@ -41,15 +43,15 @@ for img_name in image_list:
 
         x, y, w, h = cv.boundingRect(cnt)
         #cv.rectangle(img_color1, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #contour_area = cv.contourArea(cnt)
-        contour_area = w*h
+        contour_area = cv.contourArea(cnt)
+        #contour_area = w*h
         if contour_area > max :
             max = contour_area
             max_result = cnt
 
     x, y, w, h = cv.boundingRect(max_result)
     cv.rectangle(final_img, (x, y), (x + w, y + h), (0, 255, 0), 5)
-    cv.imwrite("output/"+img_name+"_02.jpg", img02[y:y+h, x:x+w])
+    cv.imwrite(output_path+img_name+"_02.jpg", img02[y:y+h, x:x+w])
 
     # 그레이 --> 캐니 --> 컨투어
     img_canny = cv.Canny(img_gray, 50, 150)
@@ -62,17 +64,18 @@ for img_name in image_list:
 
         x, y, w, h = cv.boundingRect(cnt)
         #cv.rectangle(img_color1, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #contour_area = cv.contourArea(cnt)
-        contour_area = w * h
+        contour_area = cv.contourArea(cnt)
+        #contour_area = w * h
         if contour_area > max :
             max = contour_area
             max_result = cnt
 
     x, y, w, h = cv.boundingRect(max_result)
     cv.rectangle(final_img, (x, y), (x + w, y + h), (0, 0, 255), 5)
-    cv.imwrite("output/" + img_name + "_03.jpg", img03[y:y+h, x:x+w])
+    cv.imwrite(output_path + img_name + "_03.jpg", img03[y:y+h, x:x+w])
+    cv.imwrite(output_path + img_name + ".jpg", img_color)
 
     print("finish")
 
-    cv.imshow("test06_result", final_img)
+    cv.imshow("imageCrop_result", final_img)
     cv.waitKey(0)
