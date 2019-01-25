@@ -51,7 +51,7 @@ class Net(nn.Module):
 
 
 class CNN(object):
-    def __init__(self, args):
+    def __init__(self, args, num_cls):
         # parameters
         self.batch_size = args.batch_size
         self.epoch = args.epoch
@@ -66,29 +66,9 @@ class CNN(object):
         self.beta2 = args.beta2
         self.comment = args.comment
         self.resl = 256
-        self.num_cls = 10
+        self.num_cls = num_cls
         self.crop_size = 227
 
-        # load dataset
-        data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize(self.resl),
-                transforms.RandomCrop(self.crop_size),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor()
-            ]),
-            'test': transforms.Compose([
-                transforms.Resize(self.resl),
-                transforms.CenterCrop(self.crop_size),
-                transforms.ToTensor()
-            ]),
-        }
-        dataset = {
-        x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transforms[x])
-        for x in ['train', 'test']}
-        self.dataloaders = {
-        x: DataLoader(dataset[x], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        for x in ['train', 'test']}
 
         # construct model
         self.net = Net(self.num_cls)
@@ -102,7 +82,18 @@ class CNN(object):
         else:
             self.CE_loss = nn.CrossEntropyLoss()
 
-    def train(self):
+    def train(self, root, net_num):
+        # load dataset
+        data_transforms = transforms.Compose([
+            transforms.Resize(self.resl),
+            transforms.RandomCrop(self.crop_size),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+        ])
+
+        dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'train', root + '/'), transform=data_transforms)
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
         self.train_hist = {}
         self.train_hist['G_loss'] = []
         self.train_hist['per_epoch_time'] = []
@@ -115,8 +106,8 @@ class CNN(object):
         for epoch in range(self.epoch):
             epoch_start_time = time.time()
 
-            for iB, (img_, label_) in enumerate(self.dataloaders['train']):
-                if iB == self.dataloaders['train'].dataset.__len__() // self.batch_size:
+            for iB, (img_, label_) in enumerate(dataloader):
+                if iB == dataloader.dataset.__len__() // self.batch_size:
                     break
 
                 if self.gpu_mode:
@@ -146,34 +137,48 @@ class CNN(object):
             if not os.path.exists(self.result_dir):
                 os.makedirs(self.result_dir)
             utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment)
-            self.save()
+            self.save(net_num)
 
         self.train_hist['total_time'].append(time.time() - start_time)
         print("Training finished!... save training results")
         print("Total time:", self.train_hist['total_time'][0])
         print("Per epoch time:", self.train_hist['per_epoch_time'])
-        self.save()
+        self.save(net_num)
 
-    def save(self):
+    def save(self, net_num):
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-        torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '.pkl'))
+        torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model%d_' % net_num + self.comment + '.pkl'))
 
-        with open(os.path.join(self.save_dir, 'history_' + self.comment + '.pkl'), 'wb') as f:
+        with open(os.path.join(self.save_dir, 'history%d_' % net_num + self.comment + '.pkl'), 'wb') as f:
             pickle.dump(self.train_hist, f)
 
-    def load(self):
-        self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '.pkl')))
+    def load(self, net_num):
+        self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model%d_' % net_num + self.comment + '.pkl')))
 
-    def test(self):
+    def test(self, submodels):
         self.net.eval()
-        self.load()
+        self.load(0)
+        for i in range(len(submodels)):
+            submodels[i].net.eval()
+            submodels[i].load(i + 1)
+
+        # load dataset
+        data_transforms = transforms.Compose([
+            transforms.Resize(self.resl),
+            transforms.CenterCrop(self.crop_size),
+            transforms.ToTensor(),
+        ])
+
+        dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'test/'),
+                                       transform=data_transforms)
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         test_loss, correct = 0, 0
         error_cnt = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
         with torch.no_grad():
-            for img, target in self.dataloaders['test']:
+            for img, target in dataloader:
                 if self.gpu_mode:
                     img, target = Variable(img.cuda()), Variable(target.cuda())
                 else:
@@ -181,11 +186,19 @@ class CNN(object):
                 output = self.net(img)
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
+
                 for i in range(len(target)):
                     error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
-                correct += pred.eq(target.view_as(pred)).sum().item()
+                    correct += pred.eq(target.view_as(pred)).sum().item()
 
-        test_loss /= len(self.dataloaders['test'].dataset)
+                for i in range(len(target)):
+                    if pred.view_as(target)[i].item() == 0:
+                        tmp_output = submodels[0].net(img)
+                        tmp_test_loss += submodels[0].CE_loss(tmp_output, target).item()
+                        tmp_pred = tmp_output.argmax(dim=1, keepdim=True)
+                        for j in range(tmp_pred)
+
+        test_loss /= len(dataloader.dataset)
 
         print('Average loss: %f' % test_loss,
               "Accuracy: %d/%d (%f)" % (correct, len(self.dataloaders['test'].dataset),

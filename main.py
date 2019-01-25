@@ -76,17 +76,22 @@ def main():
         print("There is no opts!!")
         exit()
 
-    model = CNN(opts)
+    model0 = CNN(opts, '', 6)
+    model1 = CNN(opts, '0/', 3)
+    model2 = CNN(opts, '1/', 3)
 
     if opts.type == 'train':
         print("[*] Training started")
-        model.train()
+        model0.train(0)
+        model1.train(1)
+        model2.train(2)
         print("[*] Training finished")
 
     elif opts.type == 'test':
         print("[*] Test started")
-        model.test()
+        model0.test([model1, model2])
         print("[*] Test finished")
+
 
 if __name__ == '__main__':
     main()
