@@ -6,6 +6,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+import numpy as np
 import utils
 import warnings
 warnings.filterwarnings('ignore')
@@ -63,6 +64,7 @@ class CNN(object):
         self.lr = args.lr
         self.beta1 = args.beta1
         self.beta2 = args.beta2
+        self.comment = args.comment
         self.resl = 256
         self.num_cls = 10
         self.crop_size = 227
@@ -87,7 +89,6 @@ class CNN(object):
         self.dataloaders = {
         x: DataLoader(dataset[x], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         for x in ['train', 'test']}
-        dataset_size = {x: len(dataset[x]) for x in ['train', 'test']}
 
         # construct model
         self.net = Net(self.num_cls)
@@ -119,7 +120,7 @@ class CNN(object):
                     break
 
                 if self.gpu_mode:
-                    label, img_ = Variable(label_.cuda(), Variable(img_.cuda()))
+                    label, img_ = Variable(label_.cuda()), Variable(img_.cuda())
                 else:
                     label, img_ = Variable(label_), Variable(img_)
 
@@ -144,7 +145,7 @@ class CNN(object):
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
             if not os.path.exists(self.result_dir):
                 os.makedirs(self.result_dir)
-            utils.loss_plot(self.train_hist, self.result_dir)
+            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment)
             self.save()
 
         self.train_hist['total_time'].append(time.time() - start_time)
@@ -157,28 +158,31 @@ class CNN(object):
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-        torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model.pkl'))
+        torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '.pkl'))
 
-        with open(os.path.join(self.save_dir, 'history.pkl'), 'wb') as f:
+        with open(os.path.join(self.save_dir, 'history_' + self.comment + '.pkl'), 'wb') as f:
             pickle.dump(self.train_hist, f)
 
     def load(self):
-        self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model.pkl')))
+        self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '.pkl')))
 
     def test(self):
         self.net.eval()
         self.load()
 
         test_loss, correct = 0, 0
+        error_cnt = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
         with torch.no_grad():
             for img, target in self.dataloaders['test']:
                 if self.gpu_mode:
-                    img, target = Variable(img.cuda(), Variable(target.cuda()))
+                    img, target = Variable(img.cuda()), Variable(target.cuda())
                 else:
                     img, target = Variable(img), Variable(target)
                 output = self.net(img)
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
+                for i in range(len(target)):
+                    error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
         test_loss /= len(self.dataloaders['test'].dataset)
@@ -186,3 +190,8 @@ class CNN(object):
         print('Average loss: %f' % test_loss,
               "Accuracy: %d/%d (%f)" % (correct, len(self.dataloaders['test'].dataset),
                                         100. * correct / len(self.dataloaders['test'].dataset)))
+
+        print('error tracking')
+        for i in range(self.num_cls):
+            print('class %d:' % i, error_cnt[i],
+                  '\taccuracy: %f(%d/%d)' % (error_cnt[i][i] / sum(error_cnt[i]) * 100, error_cnt[i][i], sum(error_cnt[i])))

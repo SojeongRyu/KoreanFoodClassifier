@@ -16,14 +16,14 @@ def parse_args():
 
     parser.add_argument('--dataroot_dir', type=str, default='./data/', help='Root path of data')
     parser.add_argument('--epoch', type=int, default=25, help='The number of epochs to run')
-    parser.add_argument('--batch_size', type=int, default=64, help='The size of batch')
+    parser.add_argument('--batch_size', type=int, default=100, help='The size of batch')
     parser.add_argument('--sample_num', type=int, default=64, help='The number of samples to test')
     parser.add_argument('--save_dir', type=str, default='./model/', help='Directory name to save the model')
     parser.add_argument('--result_dir', type=str, default='./results/', help='Directory name to save the result')
     parser.add_argument('--lr', type=float, default=0.0002, help='Learning rate')
     parser.add_argument('--beta1', type=float, default=0.5)
     parser.add_argument('--beta2', type=float, default=0.999)
-    parser.add_argument('--gpu_mode', type=str_to_bool, default='False')
+    parser.add_argument('--gpu_mode', type=str_to_bool, default='True')
     parser.add_argument('--num_workers', type=int, default=4, help='Number of threads')
     parser.add_argument('--comment', type=str, default='', help='Comment to pyt on model_name')
 
@@ -84,6 +84,7 @@ def main():
         print("[*] Training finished")
 
     elif opts.type == 'test':
+        print("[*] Test started")
         model.test()
         print("[*] Test finished")
 

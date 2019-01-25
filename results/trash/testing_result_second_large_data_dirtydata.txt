@@ -1,0 +1,5 @@
+comment: second_large_data
+model and loss plot -> ./model/model_second_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='second_large_data', dataroot_dir='./data_large/', epoch=30, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+Average loss: 0.005622 Accuracy: 1283/1517 (84.574819)
+[*] Test finished

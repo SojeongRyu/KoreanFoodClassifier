@@ -1,0 +1,6 @@
+(SSS) C:\Users\405B\KFC>python main.py --comment first_large_data --dataroot_dir ./data_large/ --type test
+comment: first_large_data
+model and loss plot -> ./model/model_first_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='first_large_data', dataroot_dir='./data_large/', epoch=25, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+Average loss: 0.004244 Accuracy: 882/1000 (88.200000)
+[*] Test finished
