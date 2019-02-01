@@ -17,7 +17,7 @@ def initialize_weights(net):
             m.bias.data.zero_()
 
 
-def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], comment=''):
+def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], net_num = 0, comment=''):
     try:
         x = range(len(hist['D_loss']))
     except:
@@ -66,7 +66,7 @@ def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], co
             x_min, x_max, y_min, _ = plt.axis()
             plt.axis((x_min, x_max, -y_max / 20, y_max))
 
-    path = os.path.join(path, 'loss_' + comment + '.png')
+    path = os.path.join(path, 'loss_%d_' % net_num + comment + '.png')
 
     plt.savefig(path)
 

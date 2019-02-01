@@ -82,16 +82,19 @@ class CNN(object):
         else:
             self.CE_loss = nn.CrossEntropyLoss()
 
-    def train(self, root, net_num):
+    def train(self, net_num):
         # load dataset
-        data_transforms = transforms.Compose([
+        data_transform = transforms.Compose([
             transforms.Resize(self.resl),
             transforms.RandomCrop(self.crop_size),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
         ])
 
-        dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'train', root + '/'), transform=data_transforms)
+        if net_num > 0:
+            dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'train/%d/' % (net_num - 1)), transform=data_transform)
+        else:
+            dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'train/'), transform=data_transform)
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         self.train_hist = {}
@@ -136,7 +139,7 @@ class CNN(object):
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
             if not os.path.exists(self.result_dir):
                 os.makedirs(self.result_dir)
-            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment)
+            utils.loss_plot(self.train_hist, self.result_dir, net_num=net_num, comment=self.comment)
             self.save(net_num)
 
         self.train_hist['total_time'].append(time.time() - start_time)
@@ -165,18 +168,18 @@ class CNN(object):
             submodels[i].load(i + 1)
 
         # load dataset
-        data_transforms = transforms.Compose([
+        data_transform = transforms.Compose([
             transforms.Resize(self.resl),
             transforms.CenterCrop(self.crop_size),
             transforms.ToTensor(),
         ])
 
         dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'test/'),
-                                       transform=data_transforms)
+                                       transform=data_transform)
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         test_loss, correct = 0, 0
-        error_cnt = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
+        error_cnt = [[0 for x in range(10)] for y in range(10)]
         with torch.no_grad():
             for img, target in dataloader:
                 if self.gpu_mode:
@@ -187,22 +190,30 @@ class CNN(object):
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
 
+                # print(type(img), img.shape)
+                # print(type(img[0]), img[0].shape)
+                # print(img[0].expand(1, 3, 227, 227).shape)
                 for i in range(len(target)):
+                    if pred.view_as(target)[i].item() not in [0, 1]:
+                        pred[i][0] += 4
+                    elif pred.view_as(target)[i].item() == 0:
+                        tmp_output = submodels[0].net(img[i].expand(1, 3, 227, 227))
+                        # tmp_test_loss += submodels[0].CE_loss(tmp_output, target).item()
+                        pred[i][0] = tmp_output.argmax(dim=1, keepdim=True)[0][0].item()
+                    else:
+                        tmp_output = submodels[1].net(img[i].expand(1, 3, 227, 227))
+                        pred[i][0] = tmp_output.argmax(dim=1, keepdim=True)[0][0].item() + 3
                     error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
-                    correct += pred.eq(target.view_as(pred)).sum().item()
 
                 for i in range(len(target)):
-                    if pred.view_as(target)[i].item() == 0:
-                        tmp_output = submodels[0].net(img)
-                        tmp_test_loss += submodels[0].CE_loss(tmp_output, target).item()
-                        tmp_pred = tmp_output.argmax(dim=1, keepdim=True)
-                        for j in range(tmp_pred)
+                        # error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
+                        correct += pred.eq(target.view_as(pred)).sum().item()
 
         test_loss /= len(dataloader.dataset)
 
         print('Average loss: %f' % test_loss,
-              "Accuracy: %d/%d (%f)" % (correct, len(self.dataloaders['test'].dataset),
-                                        100. * correct / len(self.dataloaders['test'].dataset)))
+              "Accuracy: %d/%d (%f)" % (correct, len(dataloader.dataset),
+                                        100. * correct / len(dataloader.dataset)))
 
         print('error tracking')
         for i in range(self.num_cls):

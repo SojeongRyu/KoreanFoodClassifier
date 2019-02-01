@@ -76,9 +76,9 @@ def main():
         print("There is no opts!!")
         exit()
 
-    model0 = CNN(opts, '', 6)
-    model1 = CNN(opts, '0/', 3)
-    model2 = CNN(opts, '1/', 3)
+    model0 = CNN(opts, 6)
+    model1 = CNN(opts, 3)
+    model2 = CNN(opts, 3)
 
     if opts.type == 'train':
         print("[*] Training started")
