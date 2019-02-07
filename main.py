@@ -1,4 +1,5 @@
 import argparse, os
+from PIL import Image
 from CNN import CNN
 
 def str_to_bool(v):
@@ -27,7 +28,7 @@ def parse_args():
     parser.add_argument('--num_workers', type=int, default=4, help='Number of threads')
     parser.add_argument('--comment', type=str, default='', help='Comment to pyt on model_name')
 
-    parser.add_argument('--type', type=str, default='train', help='train or test')
+    parser.add_argument('--type', type=str, default='train', help='train or test or pred')
 
     return check_args(parser.parse_args())
 
@@ -87,6 +88,11 @@ def main():
         print("[*] Test started")
         model.test()
         print("[*] Test finished")
+
+    elif opts.type == 'pred':
+        img_path = input('Input image path: ')
+        print('Predict result:', model.predict(Image.open(img_path)))
+
 
 if __name__ == '__main__':
     main()

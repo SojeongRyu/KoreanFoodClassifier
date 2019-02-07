@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-import numpy as np
+from PIL import Image
 import utils
 import warnings
 warnings.filterwarnings('ignore')
@@ -178,6 +178,7 @@ class CNN(object):
                     img, target = Variable(img.cuda()), Variable(target.cuda())
                 else:
                     img, target = Variable(img), Variable(target)
+
                 output = self.net(img)
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
@@ -195,3 +196,27 @@ class CNN(object):
         for i in range(self.num_cls):
             print('class %d:' % i, error_cnt[i],
                   '\taccuracy: %f(%d/%d)' % (error_cnt[i][i] / sum(error_cnt[i]) * 100, error_cnt[i][i], sum(error_cnt[i])))
+
+    def predict(self, img):
+        self.net.eval()
+        self.load()
+
+        data_transform = transforms.Compose([
+                transforms.Resize(self.resl),
+                transforms.CenterCrop(self.crop_size),
+                transforms.ToTensor()
+        ])
+
+        input = data_transform(img)
+        output = self.net(input.expand(1, 3, 227, 227))
+
+        file = open(self.dataroot_dir + 'class.txt')
+        classes = file.readlines()[1:]
+
+        sm = torch.nn.Softmax()
+        output_list = sm(output).tolist()[0]
+        for i in range(len(output_list)):
+            form = '{:.5%}'.format(output_list[i])
+            print('%-15s' % classes[i].split()[1].strip(), '\t', form, sep='')
+
+        return classes[output.argmax(dim=1, keepdim=True).tolist()[0][0]].split()[1].strip()
