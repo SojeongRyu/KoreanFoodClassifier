@@ -190,6 +190,7 @@ class CNN(object):
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
 
+
                 # print(type(img), img.shape)
                 # print(type(img[0]), img[0].shape)
                 # print(img[0].expand(1, 3, 227, 227).shape)
@@ -205,9 +206,7 @@ class CNN(object):
                         pred[i][0] = tmp_output.argmax(dim=1, keepdim=True)[0][0].item() + 3
                     error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
 
-                for i in range(len(target)):
-                        # error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
-                        correct += pred.eq(target.view_as(pred)).sum().item()
+                correct += pred.eq(target.view_as(pred)).sum().item()
 
         test_loss /= len(dataloader.dataset)
 
@@ -216,6 +215,6 @@ class CNN(object):
                                         100. * correct / len(dataloader.dataset)))
 
         print('error tracking')
-        for i in range(self.num_cls):
+        for i in range(10):
             print('class %d:' % i, error_cnt[i],
                   '\taccuracy: %f(%d/%d)' % (error_cnt[i][i] / sum(error_cnt[i]) * 100, error_cnt[i][i], sum(error_cnt[i])))
