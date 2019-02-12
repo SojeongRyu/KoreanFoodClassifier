@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         카메라에서 이미지 가져오기
      */
     private void takePhoto() {
-        isCamera = false;
+        isCamera = true;
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
