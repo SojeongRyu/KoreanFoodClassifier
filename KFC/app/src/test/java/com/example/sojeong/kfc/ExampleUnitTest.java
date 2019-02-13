@@ -1,4 +1,4 @@
-package com.example.sojeong.hello;
+package com.example.sojeong.kfc;
 
 import org.junit.Test;
 
