@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="27dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="76dp"
+        android:text="KFC"
+        app:layout_constraintBottom_toTopOf="@+id/btnTakePicture"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnTakePicture"
+        android:layout_width="128dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="8dp"
+        android:src = "@drawable/camera"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/btnGallery"
+        app:layout_constraintEnd_toEndOf="@+id/btnGallery"
+        app:layout_constraintStart_toStartOf="@+id/btnGallery"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+    <ImageButton
+        android:id="@+id/btnScrapped"
+        android:layout_width="128dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="7dp"
+        android:onClick="onScrapBtnClicked"
+        android:src = "@drawable/red_heart"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/btnInfo"
+        app:layout_constraintEnd_toEndOf="@+id/btnInfo"
+        app:layout_constraintStart_toStartOf="@+id/btnInfo"
+        app:layout_constraintTop_toBottomOf="@+id/btnGallery" />
+
+    <ImageButton
+        android:id="@+id/btnGallery"
+        android:layout_width="128dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:src = "@drawable/gallery"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/btnScrapped"
+        app:layout_constraintEnd_toEndOf="@+id/btnScrapped"
+        app:layout_constraintStart_toStartOf="@+id/btnScrapped"
+        app:layout_constraintTop_toBottomOf="@+id/btnTakePicture" />
+
+    <ImageButton
+        android:id="@+id/btnInfo"
+        android:layout_width="128dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="135dp"
+        android:src = "@drawable/settings"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnScrapped" />
+
+</android.support.constraint.ConstraintLayout>
