@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     package="sosooso.kfc">
 
     <!-- camera, gallery -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+=======
+    package="com.example.sojeong.hello">
+>>>>>>> 7cb6889c18ae4316364caf3a58b8535853041504
 
     <application
         android:allowBackup="true"
@@ -21,6 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
 
         <!-- crop activity -->
         <activity
@@ -39,6 +44,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+=======
+>>>>>>> 7cb6889c18ae4316364caf3a58b8535853041504
     </application>
 
 </manifest>
