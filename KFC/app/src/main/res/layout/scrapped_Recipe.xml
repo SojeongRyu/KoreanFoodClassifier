@@ -4,26 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ClickedRecipeActivity">
 
-    <CheckBox
-        android:id="@+id/btn_selector"
-        android:layout_width="42dp"
-        android:layout_height="45dp"
-        android:button="@drawable/scrap_button_on_off"
-        android:checked="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <CheckBox
+            android:id="@+id/btn_selector"
+            android:layout_width="42dp"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:button="@drawable/scrap_button_on_off"
+            android:checked="true"
+            android:duplicateParentState="false" />
 
     <ImageButton
         android:id="@+id/btn_back2"
-        android:layout_width="42dp"
+        android:layout_width="45dp"
         android:layout_height="45dp"
+        android:background="@android:color/transparent"
         android:onClick="onBackBtn2Clicked"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back" />
+        android:padding="0dp"
+        android:src="@drawable/back"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_below="@id/btn_back2"
+            android:gravity="center_vertical"
+            android:text="menu name : "
+            android:textSize="20dp" />
+    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>
