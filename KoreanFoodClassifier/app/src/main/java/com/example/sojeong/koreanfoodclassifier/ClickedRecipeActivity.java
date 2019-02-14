@@ -4,13 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class ClickedRecipeActivity extends Activity {
     Intent intent;
     String menu_name;
     TextView edit;
+    private CheckBox liked;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,27 +24,21 @@ public class ClickedRecipeActivity extends Activity {
         edit = (TextView) this.findViewById(R.id.textView1);
         edit.append(menu_name);
 
-        CheckBox liked = (CheckBox)findViewById(R.id.btn_selector);
-        liked.setOnClickListener(new CheckBox.OnClickListener(){
+        liked = (CheckBox)findViewById(R.id.btn_selector);
+        ImageButton btnBack = (ImageButton)findViewById(R.id.btn_back2);
+        btnBack.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
-                if(!((CheckBox)v).isChecked()) {
+                if(!liked.isChecked()){
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("menu_name", menu_name);
                     setResult(RESULT_OK, resultIntent);
                 }
+                finish();
             }
         });
 
+
     }
 
-
-    public void onBackBtn2Clicked(View v) {
-       /* if(!liked.isChecked()){
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("menu_name", menu_name);
-            setResult(RESULT_OK, resultIntent);
-        }*/
-        finish();
-    }
 
 }
