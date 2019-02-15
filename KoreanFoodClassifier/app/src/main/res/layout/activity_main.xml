@@ -33,6 +33,7 @@
             android:layout_below="@id/textView"
             android:layout_centerHorizontal="true"
             android:background="@android:color/transparent"
+            android:onClick="onCameraBtnClicked"
             android:src="@drawable/camera" />
 
         <ImageButton

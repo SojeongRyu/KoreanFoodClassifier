@@ -18,7 +18,8 @@
         </activity>
 
         <activity android:name=".ScrappedActivity"/>
-        <activity android:name="ClickedRecipeActivity"/>
+        <activity android:name=".ClickedRecipeActivity"/>
+        <activity android:name=".OutputActivity"/>
 
     </application>
 
