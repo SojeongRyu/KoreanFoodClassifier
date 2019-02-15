@@ -24,7 +24,7 @@
         <ListView
             android:id="@+id/recipe_list"
             android:layout_width="match_parent"
-            android:layout_height="466dp"
+            android:layout_height="match_parent"
             android:layout_below="@id/btn_back1"
             android:scrollbars="vertical" />
     </RelativeLayout>

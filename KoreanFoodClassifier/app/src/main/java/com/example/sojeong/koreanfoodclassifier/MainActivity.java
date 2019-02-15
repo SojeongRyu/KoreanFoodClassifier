@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onCameraBtnClicked(View v){
+        Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
+        startActivity(intent);
+    }
 
 
 }
