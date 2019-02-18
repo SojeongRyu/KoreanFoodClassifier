@@ -4,75 +4,74 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 public class ScrappedActivity extends Activity {
 
-    private ArrayAdapter<String> Adapter;
+    private ArrayAdapter<String> arrayAdapter;
     public static final int REQUEST_CODE_ANOTHER = 1002;
-    private ArrayList<String> datalist = new ArrayList<>();
+
+    static ArrayList<String> arrayIndex = new ArrayList<String>();
+    static ArrayList<String> arrayData = new ArrayList<String>();
     private ListView listView;
+    private DbOpenHelper mDbOpenHelper;
 
-    public ArrayList<String> getData() {
-        return datalist;
-    }
-
+    //public ArrayList<String> getData() {
+    //    return arrayData;
+    //}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scrap_display);
 
-        listView = (ListView)findViewById(R.id.recipe_list);
-        String menu1 = "김치볶음밥";
-        String menu2 = "계란말이";
-        String menu3 = "치킨";
-        String menu4 = "삼계탕";
-        String menu5 = "김밥";
-        String menu6 = "비빔밥";
-        String menu7 = "짜장면";
-        String menu8 = "짬뽕";
-        String menu9 = "짬짜면";
-        String menu10 = "파스타";
-        String menu11 = "피자";
-        String menu12 = "쌀국수";
-        String menu13 = "돈까스";
-        String menu14 = "햄버거";
-        String menu15 = "삼겹살";
-        datalist.add(menu1);
-        datalist.add(menu2);
-        datalist.add(menu3);
-        datalist.add(menu4);
-        datalist.add(menu5);
-        datalist.add(menu6);
-        datalist.add(menu7);
-        datalist.add(menu8);
-        datalist.add(menu9);
-        datalist.add(menu10);
-        datalist.add(menu11);
-        datalist.add(menu12);
-        datalist.add(menu13);
-        datalist.add(menu14);
-        datalist.add(menu15);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        //arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayData);
+        listView = (ListView) findViewById(R.id.recipe_list);
+        listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(onClickListener);
 
-
-        Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datalist);
-        listView.setAdapter(Adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), ClickedRecipeActivity.class);
-                intent.putExtra("menu",datalist.get(position));
-                startActivityForResult(intent,REQUEST_CODE_ANOTHER);
-            }
-        });
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();
+        mDbOpenHelper.create();
+        mDbOpenHelper.insertColumn("김치","재료","준비","만들기");
+        mDbOpenHelper.insertColumn("김밥","재료","준비","만들기");
+        mDbOpenHelper.insertColumn("삼계탕","재료","준비","만들기");
+        showDatabase();
 
     }
+
+    public void showDatabase() {
+        Cursor iCursor = mDbOpenHelper.sortColumn();
+        arrayData.clear();
+        arrayIndex.clear();
+        while(iCursor.moveToNext()) {
+            String tempIndex = iCursor.getString(iCursor.getColumnIndex("_id"));
+            String tempName = iCursor.getString(iCursor.getColumnIndex("foodName"));
+
+            String result = tempName;
+            arrayData.add(result);
+            arrayIndex.add(tempIndex);
+        }
+        arrayAdapter.clear();
+        arrayAdapter.addAll(arrayData);
+        arrayAdapter.notifyDataSetChanged();
+    }
+
+    private AdapterView.OnItemClickListener onClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(getApplicationContext(), ClickedRecipeActivity.class);
+            intent.putExtra("menu",arrayData.get(position));
+            startActivityForResult(intent,REQUEST_CODE_ANOTHER);
+        }
+    };
 
     public void onBackBtn1Clicked(View v){
         Intent resultIntent = new Intent();
@@ -88,10 +87,11 @@ public class ScrappedActivity extends Activity {
         if(resultCode == RESULT_OK){
             if(requestCode==REQUEST_CODE_ANOTHER){
                 String menu_name = intent.getExtras().getString("menu_name");
-                datalist.remove(menu_name);
-                Adapter.notifyDataSetChanged();
+                arrayData.remove(menu_name);
+                arrayAdapter.notifyDataSetChanged();
             }
         }
     }
 }
+
 
