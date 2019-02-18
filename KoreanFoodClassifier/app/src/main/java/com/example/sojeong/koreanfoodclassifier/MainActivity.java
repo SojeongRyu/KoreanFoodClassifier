@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendImageToServer() {  // tempFile을 TCP 연결을 통해 서버로 보내고 결과 화면 Activity로 전환한다..
-        TCP_client tcp_client = new TCP_client("192.168.0.26", 16161, tempFile);
+        TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, tempFile);
         String response = tcp_client.startTCP();
         tempFile = null;
 

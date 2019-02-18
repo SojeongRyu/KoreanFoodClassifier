@@ -18,7 +18,7 @@ public class TCP_client implements Runnable{
     private Socket socket = null;
     private DataOutputStream dataOutput = null;
     private DataInputStream dataInput = null;
-    private int BUF_SIZE = 1048576;
+    private int BUF_SIZE = 1024;
     private String serverIp;
     private int serverPort;
     private File img;
@@ -49,8 +49,13 @@ public class TCP_client implements Runnable{
             try {
                 dataOutput = new DataOutputStream(socket.getOutputStream());
                 dataInput = new DataInputStream(new FileInputStream(img));
-
                 byte[] buf = new byte[BUF_SIZE];
+                byte[] header = new byte[32];
+                byte[] lengthInfo = Integer.toString((int)img.length()).getBytes();
+                for (int i = 0; i < lengthInfo.length; i++)
+                    header[32 - lengthInfo.length + i] = lengthInfo[i];
+                Log.e("len", Integer.toString((int)img.length()) + "/" + Integer.toString(lengthInfo.length));
+                dataOutput.write(header, 0, 32);
                 int dataLen;
                 while ((dataLen = dataInput.read(buf)) > 0) {
                     dataOutput.write(buf, 0, dataLen);
