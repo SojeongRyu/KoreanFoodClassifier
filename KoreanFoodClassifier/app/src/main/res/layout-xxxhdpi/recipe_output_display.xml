@@ -41,7 +41,7 @@
                 android:layout_below="@id/btn_back2"
                 android:layout_marginTop="0dp"
                 android:text="foodName\n"
-                android:textSize="30dp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/foodIngredients"
@@ -50,7 +50,7 @@
                 android:layout_below="@id/foodName"
                 android:layout_marginTop="0dp"
                 android:text="foodIngredients\n"
-                android:textSize="30dp" />
+                android:textSize="20dp" />
             <TextView
                 android:id="@+id/foodPreparation"
                 android:layout_width="match_parent"
@@ -58,14 +58,14 @@
                 android:layout_below="@id/foodIngredients"
                 android:layout_marginTop="0dp"
                 android:text="foodPreparation\n"
-                android:textSize="30dp" />
+                android:textSize="20dp" />
             <TextView
                 android:id="@+id/foodCooking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/foodPreparation"
                 android:text="foodCooking\n"
-                android:textSize="30dp" />
+                android:textSize="20dp" />
 
             <ImageButton
                 android:id="@+id/ok_button"

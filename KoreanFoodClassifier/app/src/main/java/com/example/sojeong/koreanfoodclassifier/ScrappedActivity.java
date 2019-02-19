@@ -8,23 +8,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.database.Cursor;
-import android.util.Log;
 
 import java.util.ArrayList;
+import android.util.Log;
 
 public class ScrappedActivity extends Activity {
 
     private ArrayAdapter<String> arrayAdapter;
     public static final int REQUEST_CODE_ANOTHER = 1002;
 
-    static ArrayList<String> arrayIndex = new ArrayList<String>();
     static ArrayList<String> arrayData = new ArrayList<String>();
     private ListView listView;
     private DbOpenHelper mDbOpenHelper;
-
-    //public ArrayList<String> getData() {
-    //    return arrayData;
-    //}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +45,9 @@ public class ScrappedActivity extends Activity {
     public void showDatabase() {
         Cursor iCursor = mDbOpenHelper.sortColumn();
         arrayData.clear();
-        arrayIndex.clear();
         while(iCursor.moveToNext()) {
-            String tempIndex = iCursor.getString(iCursor.getColumnIndex("_id"));
             String tempName = iCursor.getString(iCursor.getColumnIndex("foodName"));
-
-            String result = tempName;
-            arrayData.add(result);
-            arrayIndex.add(tempIndex);
+            arrayData.add(tempName);
         }
         arrayAdapter.clear();
         arrayAdapter.addAll(arrayData);
@@ -67,8 +57,10 @@ public class ScrappedActivity extends Activity {
     private AdapterView.OnItemClickListener onClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Log.e("onclick","클릭!!!!!");
+
             Intent intent = new Intent(getApplicationContext(), ClickedRecipeActivity.class);
-            intent.putExtra("menu",arrayData.get(position));
+            intent.putExtra("foodName",arrayData.get(position));
             startActivityForResult(intent,REQUEST_CODE_ANOTHER);
         }
     };
@@ -87,8 +79,14 @@ public class ScrappedActivity extends Activity {
         if(resultCode == RESULT_OK){
             if(requestCode==REQUEST_CODE_ANOTHER){
                 String menu_name = intent.getExtras().getString("menu_name");
-                arrayData.remove(menu_name);
-                arrayAdapter.notifyDataSetChanged();
+                Log.e("result_menu", menu_name);
+                mDbOpenHelper.deleteColumn(menu_name);
+
+                //mDbOpenHelper.execSQL("delete from foodTable where foodName = \'" + menu_name + "\';");
+
+                Log.e("delete ","완료");
+                showDatabase();
+                Log.e("showDB ","완료");
             }
         }
     }

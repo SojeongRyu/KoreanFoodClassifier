@@ -63,19 +63,18 @@ public class DbOpenHelper {
         return mDB.insert(DataBases.CreateDB._TABLENAME0, null, values);
     }
 
-    // Delete All
-    public void deleteAllColumns() {
-        mDB.delete(DataBases.CreateDB._TABLENAME0, null, null);
-    }
-
     // Delete DB
-    public boolean deleteColumn(long id){
-        return mDB.delete(DataBases.CreateDB._TABLENAME0, "_id="+id, null) > 0;
+    public boolean deleteColumn(String name){
+        return mDB.delete(DataBases.CreateDB._TABLENAME0, " foodName = \'"+ name + "\'", null) > 0;
+    }
+    public void execSQL(String sql){
+        mDB.execSQL(sql);
     }
     // Select DB
     public Cursor selectColumns(){
         return mDB.query(DataBases.CreateDB._TABLENAME0, null, null, null, null, null, null);
     }
+
     public Cursor sortColumn(){
         Cursor c = mDB.rawQuery( "SELECT * FROM foodTable ;" , null);
         return c;

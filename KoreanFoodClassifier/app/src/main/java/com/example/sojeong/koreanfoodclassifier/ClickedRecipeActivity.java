@@ -8,21 +8,44 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.database.Cursor;
+import android.util.Log;
 
 public class ClickedRecipeActivity extends Activity {
     Intent intent;
-    String menu_name;
-    TextView edit;
+    String foodName, foodIngredients, foodPreparation, foodCooking;
+    TextView foodNameEdit, foodIngredientsEdit, foodPreparationEdit, foodCookingEdit;
     private CheckBox liked;
+    private DbOpenHelper mDbOpenHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scrapped_recipe);
 
         intent = getIntent();
-        menu_name = intent.getStringExtra("menu");
-        edit = (TextView) this.findViewById(R.id.textView1);
-        edit.append(menu_name);
+        foodName = intent.getStringExtra("foodName");
+        foodNameEdit = (TextView) this.findViewById(R.id.foodName);
+        foodNameEdit.append(foodName);
+
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();
+        mDbOpenHelper.create();
+
+        Cursor iCursor = mDbOpenHelper.selectColumns();
+        while(iCursor.moveToNext()) {
+            String tempName = iCursor.getString(iCursor.getColumnIndex("foodName"));
+            if (tempName.equals(foodName)) {
+                foodIngredients = iCursor.getString(iCursor.getColumnIndex("foodIngredients"));
+                foodIngredientsEdit = (TextView) this.findViewById(R.id.foodIngredients);
+                foodIngredientsEdit.setText("Food Ingredients\n" + foodIngredients);
+                foodPreparation = iCursor.getString(iCursor.getColumnIndex("foodPreparation"));
+                foodPreparationEdit = (TextView) this.findViewById(R.id.foodPreparation);
+                foodPreparationEdit.setText("Food Preparation\n" + foodPreparation);
+                foodCooking = iCursor.getString(iCursor.getColumnIndex("foodCooking"));
+                foodCookingEdit = (TextView) this.findViewById(R.id.foodCooking);
+                foodCookingEdit.setText("Food Cooking\n" + foodCooking);
+            }
+        }
 
         liked = (CheckBox)findViewById(R.id.btn_selector);
         ImageButton btnBack = (ImageButton)findViewById(R.id.btn_back2);
@@ -30,8 +53,9 @@ public class ClickedRecipeActivity extends Activity {
             public void onClick(View v){
                 if(!liked.isChecked()){
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra("menu_name", menu_name);
+                    resultIntent.putExtra("menu_name", foodName);
                     setResult(RESULT_OK, resultIntent);
+                    Log.e("menu_name",foodName);
                 }
                 finish();
             }
