@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -26,12 +27,18 @@ import android.util.Log;
 public class OutputActivity extends Activity {
 
     private String response;
+    private CheckBox liked;
+    private DbOpenHelper mDbOpenHelper;
+    private String foodName, foodIngredients, foodPreparation, foodCooking;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         response = getIntent().getStringExtra("response");
         setContentView(R.layout.recipe_output_display);
         foodInfo_show();
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.open();
+        mDbOpenHelper.create();
         ImageButton ok_button = (ImageButton)findViewById(R.id.ok_button);
         ok_button.setOnClickListener(new ImageButton.OnClickListener(){
             @Override
@@ -70,14 +77,14 @@ public class OutputActivity extends Activity {
             new Thread() {
                 public void run() {
                     String originFoodName = "This is the name of Kimchi.";
-                    String foodName = getTranslatedString("en", systemLanguage, originFoodName);
+                    foodName = getTranslatedString("en", systemLanguage, originFoodName);
                     String originFoodIngredients = "This is the ingredients of Kimchi.";
-                    String foodIngredients = getTranslatedString("en", systemLanguage, originFoodIngredients);
+                    foodIngredients = getTranslatedString("en", systemLanguage, originFoodIngredients);
                     //Log.d("test", "번역결과2: "+foodName+"   ///    "+foodIngredients);
                     String originFoodPreparation = "This is the preparation of Kimchi.";
-                    String foodPreparation= getTranslatedString("en", systemLanguage, originFoodPreparation);
+                    foodPreparation= getTranslatedString("en", systemLanguage, originFoodPreparation);
                     String originFoodCooking = "This is the cooking of Kimchi.";
-                    String foodCooking = getTranslatedString("en", systemLanguage, originFoodCooking);
+                    foodCooking = getTranslatedString("en", systemLanguage, originFoodCooking);
 
                     Bundle bun = new Bundle();
                     bun.putString("foodName_DATA",foodName);
@@ -96,19 +103,19 @@ public class OutputActivity extends Activity {
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             Bundle bun = msg.getData();
-            String foodName = bun.getString("foodName_DATA");
+            String tmpfoodName = bun.getString("foodName_DATA");
             TextView textView = (TextView)findViewById(R.id.foodName);
-            textView.setText(foodName);
-            String foodIngredients = bun.getString("foodIngredients_DATA");
+            textView.setText(tmpfoodName);
+            String tmpfoodIngredients = bun.getString("foodIngredients_DATA");
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            textView2.setText(foodIngredients);
+            textView2.setText(tmpfoodIngredients);
             //Log.d("test", "번역결과3: "+foodName+"   ///    "+foodIngredients);
-            String foodPreparation = bun.getString("foodPreparation_DATA");
+            String tmpfoodPreparation = bun.getString("foodPreparation_DATA");
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            textView3.setText(foodPreparation);
-            String foodCooking = bun.getString("foodCooking_DATA");
+            textView3.setText(tmpfoodPreparation);
+            String tmpfoodCooking = bun.getString("foodCooking_DATA");
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            textView4.setText(foodCooking);
+            textView4.setText(tmpfoodCooking);
         }
     };
 
@@ -123,6 +130,7 @@ public class OutputActivity extends Activity {
                 intent_No.putExtra("answer_code","1");
                 setResult(100,intent_No);
                 Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_SHORT).show();
+                ifChecked_scrap();
                 finish();
             }
         });
@@ -133,6 +141,7 @@ public class OutputActivity extends Activity {
                 intent_Yes.putExtra("answer_code","0");
                 setResult(101,intent_Yes);
                 Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_SHORT).show();
+                ifChecked_scrap();
                 finish();
             }
         });
@@ -140,7 +149,16 @@ public class OutputActivity extends Activity {
     }
 
     public void onBackBtnClicked(View v){
+        ifChecked_scrap();
         finish();
+    }
+
+    public void ifChecked_scrap() {
+        liked = (CheckBox)findViewById(R.id.btn_selector);
+        if(liked.isChecked()) {
+            mDbOpenHelper.insertColumn("\'"+foodName+"\'","\'"+foodIngredients+"\'",
+                    "\'"+foodPreparation+"\'","\'"+foodCooking+"\'");
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
