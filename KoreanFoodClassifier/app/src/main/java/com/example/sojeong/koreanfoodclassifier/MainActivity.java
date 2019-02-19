@@ -2,7 +2,9 @@ package com.example.sojeong.koreanfoodclassifier;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,7 +19,6 @@ import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,15 +42,19 @@ public class MainActivity extends AppCompatActivity {
     static final String[] LIST_MENU = {"LIST1", "LIST2", "LIST3"};
 
     private Boolean isPermission = true;
-    private static final int PICK_FROM_ALBUM = 1;
-    private static final int PICK_FROM_CAMERA = 2;
-    private File tempFile;
+    private static final int REQUEST_TAKE_PHOTO = 1111;
+    private static final int REQUEST_TAKE_ALBUM = 2222;
+    private static final int REQUEST_IMAGE_CROP = 3333;
+    private String mCurrentPhotoPath;
+    private Uri imageUri;
+    private Uri photoURI, albumURI;
+    private boolean isAlbum = false;
 
     @SuppressLint("WrongViewCast")
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Log.e("package name", getPackageName());
         tedPermission();
     }
 
@@ -73,124 +78,140 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if(requestCode==REQUEST_CODE_ANOTHER){
-            Toast toast = Toast.makeText(getBaseContext(),"onActivityResult 메소드가 호출됨. 요청코드 : "+requestCode + "결과코드 : "+resultCode, Toast.LENGTH_LONG);
-            toast.show();
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_TAKE_PHOTO: {
+                    try {
+                        galleryAddPic();
+                    } catch (Exception e) {
+                        Log.e("Photo Save Error", e.toString());
+                    }
+                    cropImage(photoURI);
+                    break;
+                }
+                case REQUEST_TAKE_ALBUM: {
+                    isAlbum = true;
+                    albumURI = intent.getData();
+                    cropImage(albumURI);
+                    break;
+                }
+                case REQUEST_IMAGE_CROP: {
+                    if (isAlbum)
+                        sendImageToServer(albumURI);
+                    else
+                        sendImageToServer(photoURI);
+                    break;
+                }
+            }
 
-            if(resultCode == RESULT_OK){
-                String name = intent.getExtras().getString("name");
-                toast = Toast.makeText(getBaseContext(), "응답으로 전달된 name : "+name, Toast.LENGTH_LONG);
+            if (requestCode == REQUEST_CODE_ANOTHER) {
+                Toast toast = Toast.makeText(getBaseContext(), "onActivityResult 메소드가 호출됨. 요청코드 : " + requestCode + "결과코드 : " + resultCode, Toast.LENGTH_LONG);
                 toast.show();
 
-                if (tempFile != null) {
-                    if (tempFile.exists()) {
-                        if (tempFile.delete()) {
-                            Log.e(TAG, tempFile.getAbsolutePath() + "삭제 성공");
-                            tempFile = null;
-                        }
-                    }
+                if (resultCode == RESULT_OK) {
+                    String name = intent.getExtras().getString("name");
+                    toast = Toast.makeText(getBaseContext(), "응답으로 전달된 name : " + name, Toast.LENGTH_LONG);
+                    toast.show();
+
+                    return;
                 }
-                return;
             }
         }
-
-        switch (requestCode) {
-            case PICK_FROM_ALBUM: {
-                Uri photoUri = intent.getData();
-                Log.d(TAG, "PICK_FROM_ALBUM photoUri : " + photoUri);
-                cropImage(photoUri);
-
-                break;
-            }
-            case PICK_FROM_CAMERA: {
-                Uri photoUri = Uri.fromFile(tempFile);
-                Log.d(TAG, "takePhoto photoUri : " + photoUri);
-                cropImage(photoUri);
-
-                break;
-            }
-            case Crop.REQUEST_CROP: {
-                // tempFile 에 크롭한 이미지를 이미 저장했기 때문에
-                // tempFile을 크롭한 이미지라고 생각하고 사용하면 된다.
-                sendImageToServer();
-            }
-        }
-    }
-
-    private void goToAlbum() {  // 앨범에서 이미지 가져오기
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(intent, PICK_FROM_ALBUM);
     }
 
     private void takePhoto() {  // 카메라에서 이미지 가져오기
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String state = Environment.getExternalStorageState();
+        // 외장 메모리 검사
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        try {
-            tempFile = createImageFile();
-        } catch (IOException e) {
-            Toast.makeText(this, "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-            finish();
-            e.printStackTrace();
-        }
-        if (tempFile != null) {
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                Uri photoUri = FileProvider.getUriForFile(this, "{package name}.provider", tempFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(intent, PICK_FROM_CAMERA);
-            } else {
-                Uri photoUri = Uri.fromFile(tempFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(intent, PICK_FROM_CAMERA);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException e) {
+                    Log.e("captureCamera Error", e.toString());
+                }
+                if (photoFile != null) {
+                    Log.i("getPackageName", getPackageName());
+                    Uri providerURI = FileProvider.getUriForFile(this, getPackageName(), photoFile);
+                    photoURI = providerURI;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
             }
+        } else {
+            Toast.makeText(this, "저장공간이 접근 불가능한 기기입니다.", Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
-
-    private void cropImage(Uri photoUri) {  // crop 기능
-        Log.d(TAG, "tempFile: " + tempFile);
-
-        // 갤러리에서 선택한 경우에는 tempFile이 없으므로 새로 생성해 준다.
-        if (tempFile == null) {
-            try {
-                tempFile = createImageFile();
-            } catch (IOException e) {
-                Toast.makeText(this, "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                finish();
-                e.printStackTrace();
-            }
-        }
-
-        // 크롭 후 저장할 Uri
-        Uri savingUri = Uri.fromFile(tempFile);
-
-        Crop.of(photoUri, savingUri).asSquare().start(this);
     }
 
     private File createImageFile() throws IOException { // 폴더 및 파일 만들기
         // 이미지 파일 이름 (KFC_(시간)_)
-        String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
-        String imageFileName = TAG + "_" + timeStamp + "_";
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String imageFileName = TAG + "_" + timeStamp + ".jpg";
+        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "KFC");
 
-        // 이미지가 저장될 폴더 이름 (KFC)
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/" + TAG + "/");
-        if (!storageDir.exists())    storageDir.mkdirs();
+        if (!storageDir.exists()) {
+            Log.i("mCurrentPhotoPath1", storageDir.toString());
+            storageDir.mkdirs();
+        }
 
-        // 파일 생성
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        Log.d(TAG, "createImageFile : " + image.getAbsolutePath());
+        File imageFile = new File(storageDir, imageFileName);
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
 
-        return image;
+        return imageFile;
     }
 
-    private void sendImageToServer() {  // tempFile을 TCP 연결을 통해 서버로 보내고 결과 화면 Activity로 전환한다..
-        TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, tempFile);
-        String response = tcp_client.startTCP();
-        tempFile = null;
+    private void goToAlbum() {  // 앨범에서 이미지 가져오기
+        Log.i("getAlbum", "Call");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(intent, REQUEST_TAKE_ALBUM);
+    }
 
-        Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
-        intent.putExtra("response", response);
-        startActivity(intent);
+    private void galleryAddPic() {
+        Log.i("galleryAddPic", "Call");
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        // 해당 경로에 있는 파일을 객체화
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        sendBroadcast(mediaScanIntent);
+        Toast.makeText(this, "Picture saved.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void cropImage(Uri uri) {  // crop 기능
+        Log.i("cropImage", "Call");
+        Log.i("cropImage", "photoURI: " + photoURI + " / albumURI: " + albumURI);
+
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+
+        // 50 * 50 픽셀 미만은 편집할 수 없다는 문구 처리 + 갤러리, 포토 둘 다 호환하는 방법
+        cropIntent.setDataAndType(uri, "image/*");
+        cropIntent.putExtra("scale", true);
+        if (isAlbum)    cropIntent.putExtra("output", albumURI);
+        else            cropIntent.putExtra("output", photoURI);
+        startActivityForResult(cropIntent.setData(uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION), REQUEST_IMAGE_CROP);
+    }
+
+    private void sendImageToServer(Uri img) {  //이미지를 TCP 연결을 통해 서버로 보내고 결과 화면 Activity로 전환한다.
+        File imgFile = null;
+        if (isAlbum) {
+            Cursor cursor = getContentResolver().query(img, null, null, null, null);
+            cursor.moveToNext();
+            imgFile = new File(cursor.getString(cursor.getColumnIndex("_data")));
+        }
+        else
+            imgFile = new File(Environment.getExternalStorageDirectory() + img.getPath());
+
+       TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
+       String response = tcp_client.startTCP();
+
+       Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
+       intent.putExtra("response", response);
+       startActivity(intent);
     }
 
     private void tedPermission() {  // 권한 설정
