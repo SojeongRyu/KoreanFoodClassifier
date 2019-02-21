@@ -17,22 +17,16 @@
             </intent-filter>
         </activity>
 
-        <!-- crop activity -->
-        <activity
-            android:name="com.soundcloud.android.crop.CropImageActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
         <!-- 사진 촬영을 위한 provide -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="{package name}.provider"
+            android:authorities="com.example.sojeong.koreanfoodclassifier"
             android:exported="false"
             android:grantUriPermissions="true">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/file_paths" />
         </provider>
 
         <activity android:name=".ScrappedActivity"/>
