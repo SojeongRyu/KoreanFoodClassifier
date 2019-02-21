@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onScrapBtnClicked(View v){
-       Intent intent = new Intent(getApplicationContext(), ScrappedActivity.class);
-       startActivityForResult(intent, REQUEST_CODE_ANOTHER);
+        Intent intent = new Intent(getApplicationContext(), ScrappedActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_ANOTHER);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
@@ -206,12 +206,11 @@ public class MainActivity extends AppCompatActivity {
         else
             imgFile = new File(Environment.getExternalStorageDirectory() + img.getPath());
 
-       TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
-       String response = tcp_client.startTCP();
+        TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
+        tcp_client.startTCP();
 
-       Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
-       intent.putExtra("response", response);
-       startActivity(intent);
+        Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
+        startActivity(intent);
     }
 
     private void tedPermission() {  // 권한 설정
