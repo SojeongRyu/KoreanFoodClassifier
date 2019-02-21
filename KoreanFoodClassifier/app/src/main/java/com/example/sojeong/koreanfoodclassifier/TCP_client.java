@@ -34,7 +34,7 @@ public class TCP_client implements Runnable{
 
     private Thread thread = new Thread(this);
 
-    HashMap<String, String> recipe_ko, recipe_en;
+    static HashMap<String, String> recipe_ko, recipe_en;
 
     public TCP_client(String serverIp, int serverPort, File img) {
         super();

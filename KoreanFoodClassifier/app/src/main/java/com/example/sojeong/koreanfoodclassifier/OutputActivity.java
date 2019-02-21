@@ -25,11 +25,15 @@ import android.widget.TextView;
 import android.util.Log;
 
 public class OutputActivity extends Activity {
+    HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
+    HashMap<String ,String> recipe_en = TCP_client.recipe_en;
+
 
     private String response;
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
     private String foodName, foodIngredients, foodPreparation, foodCooking;
+    String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName"};
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,36 +59,49 @@ public class OutputActivity extends Activity {
 
         if (systemLanguage == "ko") {
             TextView textView = (TextView)findViewById(R.id.foodName);
-            textView.setText("김치"); // textView.setText(foodName);
+            foodName = recipe_ko.get(tokens[0]);
+            textView.append(foodName);
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            textView2.setText("김치재료"); //textView2.setText(foodIngredients);
+            foodIngredients = recipe_ko.get(tokens[1]);
+            textView2.append(foodIngredients);
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            textView3.setText("김치만들기 준비"); //textView3.setText(foodPreparation);
+            foodPreparation = recipe_ko.get(tokens[2]);
+            textView3.append(foodPreparation);
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            textView4.setText("김치만들기"); //textView4.setText(foodCooking);
+            foodCooking = recipe_ko.get(tokens[3]);
+            textView4.append(foodCooking);
         }
         else if (systemLanguage == "en") {
             TextView textView = (TextView)findViewById(R.id.foodName);
-            textView.setText("This is the name of Kimchi." + response); // textView.setText(foodName);
+            foodName = recipe_en.get(tokens[4]) + "(" + recipe_en.get(tokens[0]) + ")";
+            textView.append(foodName);
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            textView2.setText("This is the ingredients of Kimchi."); //textView2.setText(foodIngredients);
+            foodIngredients = recipe_en.get(tokens[1]);
+            textView2.append(foodIngredients);
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            textView3.setText("This is the preparation of Kimchi."); //textView3.setText(foodPreparation);
+            foodPreparation = recipe_en.get(tokens[2]);
+            textView3.append(foodPreparation);
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            textView4.setText("This is the cooking of Kimchi."); //textView4.setText(foodCooking);
+            foodCooking = recipe_en.get(tokens[3]);
+            textView4.append(foodCooking);
         }
         else {
             new Thread() {
                 public void run() {
-                    String originFoodName = "This is the name of Kimchi.";
+                    String originFoodName = recipe_en.get(tokens[0]);
                     foodName = getTranslatedString("en", systemLanguage, originFoodName);
-                    String originFoodIngredients = "This is the ingredients of Kimchi.";
+                    foodName =  recipe_en.get(tokens[4]) + " : " + foodName;
+                    //foodName = foodName.replace("\r\n","\\n");
+                    String originFoodIngredients = recipe_en.get(tokens[1]);
                     foodIngredients = getTranslatedString("en", systemLanguage, originFoodIngredients);
+                    //foodIngredients = foodIngredients.replace("\r\n","\\n");
                     //Log.d("test", "번역결과2: "+foodName+"   ///    "+foodIngredients);
-                    String originFoodPreparation = "This is the preparation of Kimchi.";
+                    String originFoodPreparation = recipe_en.get(tokens[2]);
                     foodPreparation= getTranslatedString("en", systemLanguage, originFoodPreparation);
-                    String originFoodCooking = "This is the cooking of Kimchi.";
+                    //foodPreparation = foodPreparation.replace("\r\n","\\n");
+                    String originFoodCooking = recipe_en.get(tokens[3]);
                     foodCooking = getTranslatedString("en", systemLanguage, originFoodCooking);
+                    //foodCooking = foodCooking.replace("\r\n","\\n");
 
                     Bundle bun = new Bundle();
                     bun.putString("foodName_DATA",foodName);
@@ -105,17 +122,17 @@ public class OutputActivity extends Activity {
             Bundle bun = msg.getData();
             String tmpfoodName = bun.getString("foodName_DATA");
             TextView textView = (TextView)findViewById(R.id.foodName);
-            textView.setText(tmpfoodName);
+            textView.append(tmpfoodName);
             String tmpfoodIngredients = bun.getString("foodIngredients_DATA");
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            textView2.setText(tmpfoodIngredients);
+            textView2.append(tmpfoodIngredients);
             //Log.d("test", "번역결과3: "+foodName+"   ///    "+foodIngredients);
             String tmpfoodPreparation = bun.getString("foodPreparation_DATA");
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            textView3.setText(tmpfoodPreparation);
+            textView3.append(tmpfoodPreparation);
             String tmpfoodCooking = bun.getString("foodCooking_DATA");
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            textView4.setText(tmpfoodCooking);
+            textView4.append(tmpfoodCooking);
         }
     };
 
@@ -156,8 +173,8 @@ public class OutputActivity extends Activity {
     public void ifChecked_scrap() {
         liked = (CheckBox)findViewById(R.id.btn_selector);
         if(liked.isChecked()) {
-            mDbOpenHelper.insertColumn("\'"+foodName+"\'","\'"+foodIngredients+"\'",
-                    "\'"+foodPreparation+"\'","\'"+foodCooking+"\'");
+            mDbOpenHelper.deleteColumn(foodName);
+            mDbOpenHelper.insertColumn(foodName,foodIngredients, foodPreparation,foodCooking);
         }
     }
 
@@ -174,9 +191,14 @@ public class OutputActivity extends Activity {
 
     private String getTranslatedString(String sourceLanguage, String targetLanguage, String originString) { //APITranslateNMT
         String translatedString = "Text for Translated String";
+        originString = originString.replace("\r\n","$");
 
-        String clientId = "obY_tGKsObVUX_AY7b9u";//애플리케이션 클라이언트 아이디값";
-        String clientSecret = "nEAjxFllry";//애플리케이션 클라이언트 시크릿값";
+        //String clientId = "obY_tGKsObVUX_AY7b9u";//애플리케이션 수현클라이언트 아이디값";
+        //String clientSecret = "nEAjxFllry";//애플리케이션 수현클라이언트 시크릿값";
+
+        String clientId = "ZKSqbDudRKbISBGmZm1k";//애플리케이션 소정클라이언트 아이디값";
+        String clientSecret = "ZtEH03SRb0";//애플리케이션 소정클라이언트 시크릿값";
+
         try {
             String text = URLEncoder.encode(originString, "UTF-8");
             String apiURL = "https://openapi.naver.com/v1/papago/n2mt";
@@ -217,6 +239,7 @@ public class OutputActivity extends Activity {
             System.out.println(e+"error");
             translatedString = e.toString();
         }
+        translatedString = translatedString.replace("$","\n");
         return translatedString;
     }
 }

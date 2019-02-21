@@ -35,9 +35,6 @@ public class ScrappedActivity extends Activity {
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
-        mDbOpenHelper.insertColumn("김치","재료","준비","만들기");
-        mDbOpenHelper.insertColumn("김밥","재료","준비","만들기");
-        mDbOpenHelper.insertColumn("삼계탕","재료","준비","만들기");
         showDatabase();
 
     }
