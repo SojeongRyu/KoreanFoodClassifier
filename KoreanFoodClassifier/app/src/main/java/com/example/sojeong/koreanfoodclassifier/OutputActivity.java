@@ -9,7 +9,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +39,7 @@ public class OutputActivity extends Activity {
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
     private String foodName, foodIngredients, foodPreparation, foodCooking;
+    // private String foodImg_byteArray;
     String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName"};
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,13 @@ public class OutputActivity extends Activity {
 
     void foodInfo_show() {
         final String systemLanguage = Locale.getDefault().getLanguage();
+
+        // 이미지 저장
+        /*
+        Bitmap foodImg = byteArrayToBitmap(foodImg_byteArray);
+        ImageView imageView = (ImageView)findViewById(R.id.foodImg);
+        imageView.setImageBitmap(foodImg);
+        */
 
         if (systemLanguage == "ko") {
             TextView textView = (TextView)findViewById(R.id.foodName);
@@ -136,6 +150,10 @@ public class OutputActivity extends Activity {
         }
     };
 
+    public Bitmap byteArrayToBitmap(byte[] byteArray) {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+    }
+
     void dialog_show(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //builder.setTitle("dd");
@@ -175,6 +193,7 @@ public class OutputActivity extends Activity {
         if(liked.isChecked()) {
             mDbOpenHelper.deleteColumn(foodName);
             mDbOpenHelper.insertColumn(foodName,foodIngredients, foodPreparation,foodCooking);
+            //mDbOpenHelper.insertColumn(foodName,foodIngredients, foodPreparation,foodCooking, foodImg_byteArray);
         }
     }
 
