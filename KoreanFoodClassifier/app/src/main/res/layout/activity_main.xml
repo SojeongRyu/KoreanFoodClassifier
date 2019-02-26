@@ -55,5 +55,7 @@
             android:background="@android:color/transparent"
             android:onClick="onGalleryBtnClicked"
             android:src="@drawable/gallery" />
+
+
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

@@ -3,52 +3,94 @@ package com.example.sojeong.koreanfoodclassifier;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.database.Cursor;
 
 import java.util.ArrayList;
+import java.util.List;
 import android.util.Log;
 
 public class ScrappedActivity extends Activity {
 
-    private ArrayAdapter<String> arrayAdapter;
+    private SearchAdapter searchAdapter;
     public static final int REQUEST_CODE_ANOTHER = 1002;
 
     static ArrayList<String> arrayData = new ArrayList<String>();
     private ListView listView;
     private DbOpenHelper mDbOpenHelper;
+    private EditText editSearch;
+    private List<String> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scrap_display);
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        //arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayData);
+        list = new ArrayList<String>();
+        editSearch = (EditText) findViewById(R.id.editSearch);
         listView = (ListView) findViewById(R.id.recipe_list);
-        listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(onClickListener);
+        searchAdapter = new SearchAdapter(list, this);
+        listView.setAdapter(searchAdapter);
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
-        showDatabase();
+
+        initializeArrayData();
+
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = editSearch.getText().toString();
+                search(text);
+            }
+        });
 
     }
 
-    public void showDatabase() {
+    public void search(String charText) {
+        list.clear();
+
+        if (charText.length() == 0) {
+            list.addAll(arrayData);
+        }
+        else {
+            for(int i=0; i<arrayData.size(); i++) {
+                if (arrayData.get(i).toLowerCase().contains(charText)) {
+                    list.add(arrayData.get(i));
+                }
+            }
+        }
+        searchAdapter.notifyDataSetChanged();
+    }
+
+    public void initializeArrayData() {
         Cursor iCursor = mDbOpenHelper.sortColumn();
         arrayData.clear();
         while(iCursor.moveToNext()) {
             String tempName = iCursor.getString(iCursor.getColumnIndex("foodName"));
             arrayData.add(tempName);
         }
-        arrayAdapter.clear();
-        arrayAdapter.addAll(arrayData);
-        arrayAdapter.notifyDataSetChanged();
+        list.clear();
+        list.addAll(arrayData);
+        searchAdapter.notifyDataSetChanged();
     }
 
     private AdapterView.OnItemClickListener onClickListener = new AdapterView.OnItemClickListener() {
@@ -57,7 +99,8 @@ public class ScrappedActivity extends Activity {
             Log.e("onclick","클릭!!!!!");
 
             Intent intent = new Intent(getApplicationContext(), ClickedRecipeActivity.class);
-            intent.putExtra("foodName",arrayData.get(position));
+            intent.putExtra("foodName",list.get(position));
+            Log.e("click_foodName",list.get(position));
             startActivityForResult(intent,REQUEST_CODE_ANOTHER);
         }
     };
@@ -79,10 +122,8 @@ public class ScrappedActivity extends Activity {
                 Log.e("result_menu", menu_name);
                 mDbOpenHelper.deleteColumn(menu_name);
 
-                //mDbOpenHelper.execSQL("delete from foodTable where foodName = \'" + menu_name + "\';");
-
                 Log.e("delete ","완료");
-                showDatabase();
+                initializeArrayData();
                 Log.e("showDB ","완료");
             }
         }
