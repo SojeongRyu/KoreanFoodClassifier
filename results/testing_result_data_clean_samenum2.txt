@@ -1,0 +1,17 @@
+comment: data_clean_samenum2
+model and loss plot -> ./model/model_data_clean_samenum2
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='data_clean_samenum2', dataroot_dir='./data_clean_samenum', epoch=30, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.006293 Accuracy: 420/497 (84.507042)
+error tracking
+class 0: [38, 0, 0, 0, 2, 0, 0, 3, 5, 0] 	accuracy: 79.166667(38/48)
+class 1: [0, 40, 1, 0, 2, 0, 2, 5, 0, 0] 	accuracy: 80.000000(40/50)
+class 2: [0, 0, 48, 0, 0, 1, 0, 1, 0, 0] 	accuracy: 96.000000(48/50)
+class 3: [0, 0, 0, 43, 2, 3, 1, 0, 0, 1] 	accuracy: 86.000000(43/50)
+class 4: [3, 0, 0, 1, 38, 3, 1, 0, 4, 0] 	accuracy: 76.000000(38/50)
+class 5: [0, 0, 0, 1, 0, 48, 0, 0, 0, 1] 	accuracy: 96.000000(48/50)
+class 6: [2, 0, 4, 1, 0, 2, 39, 1, 0, 0] 	accuracy: 79.591837(39/49)
+class 7: [0, 0, 3, 0, 0, 4, 0, 42, 1, 0] 	accuracy: 84.000000(42/50)
+class 8: [2, 0, 3, 0, 1, 0, 1, 1, 42, 0] 	accuracy: 84.000000(42/50)
+class 9: [0, 0, 1, 0, 0, 7, 0, 0, 0, 42] 	accuracy: 84.000000(42/50)
+[*] Test finished

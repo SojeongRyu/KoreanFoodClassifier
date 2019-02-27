@@ -1,0 +1,17 @@
+comment: data_not_clean
+model and loss plot -> ./model/model_data_not_clean
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='data_not_clean', dataroot_dir='./data_not_clean', epoch=30, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.005330 Accuracy: 834/997 (83.650953)
+error tracking
+class 0: [85, 0, 0, 2, 3, 0, 0, 3, 6, 0] 	accuracy: 85.858586(85/99)
+class 1: [0, 94, 0, 2, 1, 0, 1, 1, 1, 0] 	accuracy: 94.000000(94/100)
+class 2: [1, 14, 68, 1, 0, 2, 1, 7, 3, 2] 	accuracy: 68.686869(68/99)
+class 3: [3, 7, 0, 84, 2, 0, 1, 1, 1, 1] 	accuracy: 84.000000(84/100)
+class 4: [4, 0, 0, 0, 91, 0, 1, 2, 2, 0] 	accuracy: 91.000000(91/100)
+class 5: [9, 1, 0, 4, 0, 75, 0, 5, 1, 4] 	accuracy: 75.757576(75/99)
+class 6: [4, 4, 2, 4, 4, 0, 73, 5, 4, 0] 	accuracy: 73.000000(73/100)
+class 7: [2, 3, 0, 2, 1, 1, 1, 88, 2, 0] 	accuracy: 88.000000(88/100)
+class 8: [2, 1, 0, 0, 0, 0, 2, 5, 90, 0] 	accuracy: 90.000000(90/100)
+class 9: [0, 1, 1, 4, 3, 4, 0, 1, 0, 86] 	accuracy: 86.000000(86/100)
+[*] Test finished

@@ -6,7 +6,6 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from PIL import Image
 import utils
 import warnings
 warnings.filterwarnings('ignore')
@@ -69,27 +68,6 @@ class CNN(object):
         self.num_cls = 10
         self.crop_size = 227
 
-        # load dataset
-        data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize(self.resl),
-                transforms.RandomCrop(self.crop_size),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor()
-            ]),
-            'test': transforms.Compose([
-                transforms.Resize(self.resl),
-                transforms.CenterCrop(self.crop_size),
-                transforms.ToTensor()
-            ]),
-        }
-        dataset = {
-        x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transforms[x])
-        for x in ['train', 'test']}
-        self.dataloaders = {
-        x: DataLoader(dataset[x], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        for x in ['train', 'test']}
-
         # construct model
         self.net = Net(self.num_cls)
 
@@ -108,6 +86,16 @@ class CNN(object):
         self.train_hist['per_epoch_time'] = []
         self.train_hist['total_time'] = []
 
+        # load dataset
+        data_transform = transforms.Compose([
+                transforms.Resize(self.resl),
+                transforms.RandomCrop(self.crop_size),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+        ])
+        dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'train/'), transform=data_transform)
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
         # train
         self.net.train()
         start_time = time.time()
@@ -115,8 +103,8 @@ class CNN(object):
         for epoch in range(self.epoch):
             epoch_start_time = time.time()
 
-            for iB, (img_, label_) in enumerate(self.dataloaders['train']):
-                if iB == self.dataloaders['train'].dataset.__len__() // self.batch_size:
+            for iB, (img_, label_) in enumerate(dataloader):
+                if iB == dataloader.dataset.__len__() // self.batch_size:
                     break
 
                 if self.gpu_mode:
@@ -170,10 +158,19 @@ class CNN(object):
         self.net.eval()
         self.load()
 
+        # load dataset
+        data_transform = transforms.Compose([
+                transforms.Resize(self.resl),
+                transforms.CenterCrop(self.crop_size),
+                transforms.ToTensor(),
+        ])
+        dataset = datasets.ImageFolder(root=os.path.join(self.dataroot_dir, 'test/'), transform=data_transform)
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
         test_loss, correct = 0, 0
         error_cnt = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
         with torch.no_grad():
-            for img, target in self.dataloaders['test']:
+            for img, target in dataloader:
                 if self.gpu_mode:
                     img, target = Variable(img.cuda()), Variable(target.cuda())
                 else:
@@ -186,11 +183,11 @@ class CNN(object):
                     error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        test_loss /= len(self.dataloaders['test'].dataset)
+        test_loss /= len(dataloader.dataset)
 
         print('Average loss: %f' % test_loss,
-              "Accuracy: %d/%d (%f)" % (correct, len(self.dataloaders['test'].dataset),
-                                        100. * correct / len(self.dataloaders['test'].dataset)))
+              "Accuracy: %d/%d (%f)" % (correct, len(dataloader.dataset),
+                                        100. * correct / len(dataloader.dataset)))
 
         print('error tracking')
         for i in range(self.num_cls):
@@ -219,4 +216,4 @@ class CNN(object):
             form = '{:.5%}'.format(output_list[i])
             print('%-15s' % classes[i].split()[1].strip(), '\t', form, sep='')
 
-        return classes[output.argmax(dim=1, keepdim=True).tolist()[0][0]].split()[1].strip()
+        return output.argmax(dim=1, keepdim=True).tolist()[0][0]

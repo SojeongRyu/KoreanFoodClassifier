@@ -16,7 +16,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--dataroot_dir', type=str, default='./data/', help='Root path of data')
-    parser.add_argument('--epoch', type=int, default=25, help='The number of epochs to run')
+    parser.add_argument('--epoch', type=int, default=30, help='The number of epochs to run')
     parser.add_argument('--batch_size', type=int, default=100, help='The size of batch')
     parser.add_argument('--sample_num', type=int, default=64, help='The number of samples to test')
     parser.add_argument('--save_dir', type=str, default='./model/', help='Directory name to save the model')
@@ -90,8 +90,8 @@ def main():
         print("[*] Test finished")
 
     elif opts.type == 'pred':
-        img_path = input('Input image path: ')
-        print('Predict result:', model.predict(Image.open(img_path)))
+        print('Predict result:', model.predict(Image.open('./img.jpg')))
+
 
 
 if __name__ == '__main__':
