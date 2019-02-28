@@ -63,6 +63,10 @@ public class OutputActivity extends Activity {
     void foodInfo_show() {
         final String systemLanguage = Locale.getDefault().getLanguage();
         foodId = recipe_ko.get(tokens[5]);
+        ImageView imageView = (ImageView)findViewById(R.id.foodImg);
+        String foodImgName = "food00" + foodId;
+        imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
+        Log.e("foodImg","food00"+foodId);
 
         if (systemLanguage == "ko") {
             TextView textView = (TextView)findViewById(R.id.foodName);
