@@ -87,7 +87,7 @@ public class OutputActivity extends Activity {
         }
         else if (systemLanguage == "en") {
             TextView textView = (TextView)findViewById(R.id.foodName);
-            foodName = recipe_en.get(tokens[4]) + "(" + recipe_en.get(tokens[0]) + ")";
+            foodName = recipe_en.get(tokens[4]) + "(" + recipe_en.get(tokens[0]).trim() + ")";
             textView.append(foodName);
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
             foodIngredients = recipe_en.get(tokens[1]);
