@@ -5,6 +5,7 @@ import android.provider.BaseColumns;
 public final class DataBases {
 
     public static final class CreateDB implements  BaseColumns {
+        public static final String foodId = "foodId";
         public static final String foodName  = "foodName";
         public static final String foodIngredients = "foodIngredients";
         public static final String foodPreparation  = "foodPreparation";
@@ -14,10 +15,10 @@ public final class DataBases {
         public static final String _TABLENAME0 = "foodTable";
         public static final String _CREATE0 = "create table if not exists " + _TABLENAME0
                 + "(" + _ID + " integer primary key autoincrement, "
+                + foodId + " text not null , "
                 + foodName + " text not null , "
                 + foodIngredients + " text not null , "
                 + foodPreparation + " text not null , "
-                + foodCooking + " text not null , "
-                + foodImg + " blob );" ;
+                + foodCooking + " text not null );" ;
     }
 }

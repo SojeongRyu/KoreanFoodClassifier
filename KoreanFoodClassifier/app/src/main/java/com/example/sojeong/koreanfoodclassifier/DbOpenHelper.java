@@ -54,22 +54,13 @@ public class DbOpenHelper {
     }
 
     // Insert DB (not include img)
-    public long insertColumn(String foodName, String foodIngredients, String foodPreparation , String foodCooking){
+    public long insertColumn(String foodId, String foodName, String foodIngredients, String foodPreparation , String foodCooking){
         ContentValues values = new ContentValues();
+        values.put(DataBases.CreateDB.foodId, foodId);
         values.put(DataBases.CreateDB.foodName, foodName);
         values.put(DataBases.CreateDB.foodIngredients, foodIngredients);
         values.put(DataBases.CreateDB.foodPreparation, foodPreparation);
         values.put(DataBases.CreateDB.foodCooking, foodCooking);
-        return mDB.insert(DataBases.CreateDB._TABLENAME0, null, values);
-    }
-    // Insert DB (include img)
-    public long insertColumn_img(String foodName, String foodIngredients, String foodPreparation , String foodCooking, byte[] foodImg){
-        ContentValues values = new ContentValues();
-        values.put(DataBases.CreateDB.foodName, foodName);
-        values.put(DataBases.CreateDB.foodIngredients, foodIngredients);
-        values.put(DataBases.CreateDB.foodPreparation, foodPreparation);
-        values.put(DataBases.CreateDB.foodCooking, foodCooking);
-        values.put(DataBases.CreateDB.foodImg, foodImg);
         return mDB.insert(DataBases.CreateDB._TABLENAME0, null, values);
     }
 

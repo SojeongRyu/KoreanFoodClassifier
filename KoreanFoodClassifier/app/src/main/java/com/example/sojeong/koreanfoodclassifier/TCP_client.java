@@ -77,10 +77,10 @@ public class TCP_client implements Runnable{
                 String recv;
                 recipe_ko = new HashMap<String, String>();
                 recipe_en = new HashMap<String, String>();
-                String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food name", "food krName", "food ingredients", "food preparation", "food cooking"};
-                for (int i = 0; i < 4; i++)
+                String[] tokens = {"food id", "food name", "food ingredients", "food preparation", "food cooking", "food name", "food krName", "food ingredients", "food preparation", "food cooking"};
+                for (int i = 0; i < 5; i++)
                     recipe_ko.put(tokens[i], "");
-                for (int i = 4; i < tokens.length; i++)
+                for (int i = 5; i < tokens.length; i++)
                     recipe_en.put(tokens[i], "");
                 int i = 0;
                 while(!(recv = bufferedReader.readLine()).equals("recipe_en")) {

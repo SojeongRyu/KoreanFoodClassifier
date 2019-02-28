@@ -38,9 +38,8 @@ public class OutputActivity extends Activity {
     private String response;
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
-    private String foodName, foodIngredients, foodPreparation, foodCooking;
-    // private String foodImg_byteArray;
-    String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName"};
+    private String foodId, foodName, foodIngredients, foodPreparation, foodCooking;
+    String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName", "food id"};
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,13 +62,7 @@ public class OutputActivity extends Activity {
 
     void foodInfo_show() {
         final String systemLanguage = Locale.getDefault().getLanguage();
-
-        // 이미지 저장
-        /*
-        Bitmap foodImg = byteArrayToBitmap(foodImg_byteArray);
-        ImageView imageView = (ImageView)findViewById(R.id.foodImg);
-        imageView.setImageBitmap(foodImg);
-        */
+        foodId = recipe_ko.get(tokens[5]);
 
         if (systemLanguage == "ko") {
             TextView textView = (TextView)findViewById(R.id.foodName);
@@ -192,8 +185,7 @@ public class OutputActivity extends Activity {
         liked = (CheckBox)findViewById(R.id.btn_selector);
         if(liked.isChecked()) {
             mDbOpenHelper.deleteColumn(foodName);
-            mDbOpenHelper.insertColumn(foodName,foodIngredients, foodPreparation,foodCooking);
-            //mDbOpenHelper.insertColumn(foodName,foodIngredients, foodPreparation,foodCooking, foodImg_byteArray);
+            mDbOpenHelper.insertColumn(foodId, foodName,foodIngredients, foodPreparation,foodCooking);
         }
     }
 
