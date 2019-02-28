@@ -41,13 +41,13 @@ public class ClickedRecipeActivity extends Activity {
             if (tempName.equals(foodName)) {
                 foodIngredients = iCursor.getString(iCursor.getColumnIndex("foodIngredients"));
                 foodIngredientsEdit = (TextView) this.findViewById(R.id.foodIngredients);
-                foodIngredientsEdit.setText("Food Ingredients\n" + foodIngredients);
+                foodIngredientsEdit.setText(foodIngredients);
                 foodPreparation = iCursor.getString(iCursor.getColumnIndex("foodPreparation"));
                 foodPreparationEdit = (TextView) this.findViewById(R.id.foodPreparation);
-                foodPreparationEdit.setText("Food Preparation\n" + foodPreparation);
+                foodPreparationEdit.setText(foodPreparation);
                 foodCooking = iCursor.getString(iCursor.getColumnIndex("foodCooking"));
                 foodCookingEdit = (TextView) this.findViewById(R.id.foodCooking);
-                foodCookingEdit.setText("Food Cooking\n" + foodCooking);
+                foodCookingEdit.setText(foodCooking);
                 /*
                 foodImg_byteArray = iCursor.getString(iCursor.getColumnIndex("foodImg"));
                 Bitmap foodImg = byteArrayToBitmap(foodImg_byteArray);

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -15,47 +16,64 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
+            android:id="@+id/linearLayout1"
             android:layout_width="wrap_content"
-            android:layout_height="137dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text=""
-            android:textColor="@android:color/holo_blue_light"
-            android:textSize="20dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp">
 
-        <ImageButton
-            android:id="@+id/btnTakePicture"
-            android:layout_width="148dp"
-            android:layout_height="100dp"
-            android:layout_below="@id/textView"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:onClick="onTakePictureBtnClicked"
-            android:src="@drawable/camera" />
+            <ImageView
+                android:id="@id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/title2"/>
 
-        <ImageButton
-            android:id="@+id/btnScrapped"
-            android:layout_width="148dp"
-            android:layout_height="100dp"
-            android:layout_below="@id/btnGallery"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:onClick="onScrapBtnClicked"
-            android:src="@drawable/red_heart" />
+        </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnGallery"
-            android:layout_width="148dp"
-            android:layout_height="100dp"
-            android:layout_below="@id/btnTakePicture"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:onClick="onGalleryBtnClicked"
-            android:src="@drawable/gallery" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/linearLayout1"
+            android:gravity="center">
 
+            <ImageButton
+                android:id="@+id/btnTakePicture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_margin="10dp"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:onClick="onTakePictureBtnClicked"
+                android:src="@drawable/take_photo" />
+
+            <ImageButton
+                android:id="@+id/btnGallery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_margin="10dp"
+                android:layout_below="@id/btnTakePicture"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:onClick="onGalleryBtnClicked"
+                android:src="@drawable/load_photo" />
+
+            <ImageButton
+                android:id="@+id/btnScrapped"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:layout_margin="10dp"
+                android:layout_below="@id/btnGallery"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:onClick="onScrapBtnClicked"
+                android:src="@drawable/scrapped_recipe" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
