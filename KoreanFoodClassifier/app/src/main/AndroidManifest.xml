@@ -32,6 +32,7 @@
         <activity android:name=".ScrappedActivity"/>
         <activity android:name=".ClickedRecipeActivity"/>
         <activity android:name=".OutputActivity"/>
+        <activity android:name=".ScrappedActivity2"/>
 
     </application>
 

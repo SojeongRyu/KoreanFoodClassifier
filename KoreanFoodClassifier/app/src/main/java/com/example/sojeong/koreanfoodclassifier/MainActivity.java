@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onScrapBtnClicked(View v){
-        Intent intent = new Intent(getApplicationContext(), ScrappedActivity.class);
+        Intent intent = new Intent(getApplicationContext(), ScrappedActivity2.class);
         startActivityForResult(intent, REQUEST_CODE_ANOTHER);
     }
 
