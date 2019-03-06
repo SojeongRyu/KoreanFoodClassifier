@@ -51,6 +51,8 @@ public class OutputActivity extends Activity {
         dialog_show(dialog_foodID);
         if(dialog_answer==1) {
             cnt++;
+            recipe_ko = TCP_client.recipe_ko;
+            recipe_en = TCP_client.recipe_en;
             dialog_foodID = recipe_ko.get(tokens[5]);
             dialog_show(dialog_foodID);
             if(dialog_answer==0)
