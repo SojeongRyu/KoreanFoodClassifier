@@ -34,7 +34,8 @@ public class OutputActivity extends Activity {
     HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
 
-
+    private int cnt = 0;
+    private int dialog_answer = 0;
     private String response;
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
@@ -45,24 +46,28 @@ public class OutputActivity extends Activity {
         super.onCreate(savedInstanceState);
         response = getIntent().getStringExtra("response");
         setContentView(R.layout.recipe_output_display);
-        foodInfo_show();
+
+        String dialog_foodID = recipe_ko.get(tokens[5]);
+        dialog_show(dialog_foodID);
+        if(dialog_answer==1) {
+            cnt++;
+            dialog_foodID = recipe_ko.get(tokens[5]);
+            dialog_show(dialog_foodID);
+            if(dialog_answer==0)
+                foodInfo_show(dialog_foodID);
+        }
+        else
+            foodInfo_show(dialog_foodID);
+
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
-        ImageButton ok_button = (ImageButton)findViewById(R.id.ok_button);
-        ok_button.setOnClickListener(new ImageButton.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                dialog_show();
 
-            }
-        });
     }
 
 
-    void foodInfo_show() {
+    void foodInfo_show(String foodId) {
         final String systemLanguage = Locale.getDefault().getLanguage();
-        foodId = recipe_ko.get(tokens[5]);
         ImageView imageView = (ImageView)findViewById(R.id.foodImg);
         String foodImgName = "food00" + foodId;
         imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
@@ -151,29 +156,23 @@ public class OutputActivity extends Activity {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
-    void dialog_show(){
+    void dialog_show(String dialog_foodID){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //builder.setTitle("dd");
+        String firstImageName = "food00"+dialog_foodID;
+        ImageView img = (ImageView)findViewById(R.id.dialog_img);
+        img.setImageResource(getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
         builder.setMessage("Are you satisfy the recipe?");
         builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent_No = new Intent();
-                intent_No.putExtra("answer_code","1");
-                setResult(100,intent_No);
-                Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_SHORT).show();
-                ifChecked_scrap();
+                dialog_answer = 1;
                 finish();
             }
         });
         builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent_Yes = new Intent();
-                intent_Yes.putExtra("answer_code","0");
-                setResult(101,intent_Yes);
-                Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_SHORT).show();
-                ifChecked_scrap();
+                dialog_answer = 0;
                 finish();
             }
         });
