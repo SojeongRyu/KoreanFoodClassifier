@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,6 +50,7 @@ public class OutputActivity extends Activity {
 
         String dialog_foodID = recipe_ko.get(tokens[5]);
         dialog_show(dialog_foodID);
+        Log.e("!!!!!!!", "돌아오나요??" + dialog_answer);
         if(dialog_answer==1) {
             cnt++;
             recipe_ko = TCP_client.recipe_ko;
@@ -159,23 +161,25 @@ public class OutputActivity extends Activity {
     }
 
     void dialog_show(String dialog_foodID){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String firstImageName = "food00"+dialog_foodID;
         ImageView img = (ImageView)findViewById(R.id.dialog_img);
+        ((ViewGroup)img.getParent()).removeView(img);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this).setView(img);
+        //setContentView(R.layout.check_img);
+        String firstImageName = "food00"+dialog_foodID;
         img.setImageResource(getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
         builder.setMessage("Are you satisfy the recipe?");
         builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog_answer = 1;
-                finish();
+                Log.e("No", "" + dialog_answer);
             }
         });
         builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog_answer = 0;
-                finish();
+                Log.e("Yes", "" + dialog_answer);
             }
         });
         builder.show();
