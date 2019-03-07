@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             imgFile = new File(Environment.getExternalStorageDirectory() + img.getPath());
 
         TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
-        tcp_client.startTCP();
+        tcp_client.startTCP(false, 0);
 
         Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
         startActivity(intent);

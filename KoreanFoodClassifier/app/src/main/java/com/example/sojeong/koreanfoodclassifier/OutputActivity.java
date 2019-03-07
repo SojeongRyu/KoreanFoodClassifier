@@ -35,10 +35,7 @@ public class OutputActivity extends Activity {
     HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
     private ImageView img;
-    private int cnt = 0;
-    private int dialog_cnt=0;
-    private int dialog_answer = 0;
-    private String response;
+    private int no_cnt = 0;
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
     private String foodId, foodName, foodIngredients, foodPreparation, foodCooking;
@@ -46,13 +43,10 @@ public class OutputActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        response = getIntent().getStringExtra("response");
         setContentView(R.layout.recipe_output_display);
         img = (ImageView)findViewById(R.id.dialog_img);
         String dialog_foodID = recipe_ko.get(tokens[5]);
         dialog_show(dialog_foodID);
-
-        //Log.e("!!!!!!!", "돌아오나요??" + dialog_answer);
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
@@ -158,6 +152,7 @@ public class OutputActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                finish();
             }
         });
         sorry_dialog.show();
@@ -186,33 +181,38 @@ public class OutputActivity extends Activity {
         builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(dialog_cnt<1){
+                if(no_cnt == 0){
+                    no_cnt++;
+                    sendResponse(false, no_cnt);
                     dialog.dismiss();
                     recipe_ko = TCP_client.recipe_ko;
                     recipe_en = TCP_client.recipe_en;
                     String new_dialog_foodID = recipe_ko.get(tokens[5]);
-                    dialog_cnt++;
                     dialog_show(new_dialog_foodID);
                 }
-                else if(dialog_cnt==1){
-                    sorry_dialog();
-                }
                 else {
-                    finish();
+                    no_cnt++;
+                    sendResponse(false, no_cnt);
+                    sorry_dialog();
                 }
             }
         });
         builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                sendResponse(true, no_cnt);
                 dialog.dismiss();
                 foodInfo_show(dialog_foodID);
-                //Log.e("Yes", "" + dialog_answer);
             }
         });
         AlertDialog alert = builder.create();
         alert.show();
         //builder.show();
+    }
+
+    private void sendResponse(boolean isYes, int noCnt) {
+        TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, null);
+        tcp_client.startTCP(isYes, noCnt);
     }
 
     public void onBackBtnClicked(View v){
