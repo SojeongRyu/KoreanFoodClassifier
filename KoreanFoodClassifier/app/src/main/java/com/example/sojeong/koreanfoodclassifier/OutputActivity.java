@@ -34,7 +34,7 @@ import android.util.Log;
 public class OutputActivity extends Activity {
     HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
-
+    private ImageView img;
     private int cnt = 0;
     private int dialog_cnt=0;
     private int dialog_answer = 0;
@@ -48,7 +48,7 @@ public class OutputActivity extends Activity {
         super.onCreate(savedInstanceState);
         response = getIntent().getStringExtra("response");
         setContentView(R.layout.recipe_output_display);
-
+        img = (ImageView)findViewById(R.id.dialog_img);
         String dialog_foodID = recipe_ko.get(tokens[5]);
         dialog_show(dialog_foodID);
 
@@ -152,8 +152,13 @@ public class OutputActivity extends Activity {
     }
 
     void dialog_show(final String dialog_foodID){
-        ImageView img = (ImageView)findViewById(R.id.dialog_img);
-        ((ViewGroup)img.getParent()).removeView(img);
+        Log.e("img", img.toString());
+        try {
+            if (img.getParent() != null)
+                ((ViewGroup) img.getParent()).removeView(img);
+        } catch (Exception e) {
+            Log.e("img.getParent()", e.toString());
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this).setView(img);
         //setContentView(R.layout.check_img);
         builder.setCancelable(false);
@@ -176,6 +181,9 @@ public class OutputActivity extends Activity {
                     String new_dialog_foodID = recipe_ko.get(tokens[5]);
                     dialog_show(new_dialog_foodID);
                     dialog_cnt++;
+                }
+                else {
+                    finish();
                 }
             }
         });
