@@ -36,6 +36,7 @@ public class OutputActivity extends Activity {
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
 
     private int cnt = 0;
+    private int dialog_cnt=0;
     private int dialog_answer = 0;
     private String response;
     private CheckBox liked;
@@ -50,18 +51,8 @@ public class OutputActivity extends Activity {
 
         String dialog_foodID = recipe_ko.get(tokens[5]);
         dialog_show(dialog_foodID);
-        Log.e("!!!!!!!", "돌아오나요??" + dialog_answer);
-        if(dialog_answer==1) {
-            cnt++;
-            recipe_ko = TCP_client.recipe_ko;
-            recipe_en = TCP_client.recipe_en;
-            dialog_foodID = recipe_ko.get(tokens[5]);
-            dialog_show(dialog_foodID);
-            if(dialog_answer==0)
-                foodInfo_show(dialog_foodID);
-        }
-        else
-            foodInfo_show(dialog_foodID);
+
+        //Log.e("!!!!!!!", "돌아오나요??" + dialog_answer);
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
@@ -160,29 +151,45 @@ public class OutputActivity extends Activity {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
-    void dialog_show(String dialog_foodID){
+    void dialog_show(final String dialog_foodID){
         ImageView img = (ImageView)findViewById(R.id.dialog_img);
         ((ViewGroup)img.getParent()).removeView(img);
         AlertDialog.Builder builder = new AlertDialog.Builder(this).setView(img);
         //setContentView(R.layout.check_img);
+        builder.setCancelable(false);
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_LONG).show();
+            }
+        });
         String firstImageName = "food00"+dialog_foodID;
         img.setImageResource(getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
         builder.setMessage("Are you satisfy the recipe?");
         builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog_answer = 1;
-                Log.e("No", "" + dialog_answer);
+                if(dialog_cnt<1){
+                    dialog.dismiss();
+                    recipe_ko = TCP_client.recipe_ko;
+                    recipe_en = TCP_client.recipe_en;
+                    String new_dialog_foodID = recipe_ko.get(tokens[5]);
+                    dialog_show(new_dialog_foodID);
+                    dialog_cnt++;
+                }
             }
         });
         builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog_answer = 0;
-                Log.e("Yes", "" + dialog_answer);
+                dialog.dismiss();
+                foodInfo_show(dialog_foodID);
+                //Log.e("Yes", "" + dialog_answer);
             }
         });
-        builder.show();
+        AlertDialog alert = builder.create();
+        alert.show();
+        //builder.show();
     }
 
     public void onBackBtnClicked(View v){
