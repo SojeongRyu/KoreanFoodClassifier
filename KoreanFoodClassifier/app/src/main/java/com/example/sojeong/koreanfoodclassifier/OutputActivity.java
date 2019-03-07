@@ -39,7 +39,7 @@ public class OutputActivity extends Activity {
     private CheckBox liked;
     private DbOpenHelper mDbOpenHelper;
     private String foodId, foodName, foodIngredients, foodPreparation, foodCooking;
-    String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName", "food id"};
+    String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName", "food id", "predict percentage"};
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,31 +63,32 @@ public class OutputActivity extends Activity {
         Log.e("foodImg","food00"+foodId);
 
         if (systemLanguage == "ko") {
+            this.foodId = foodId;
             TextView textView = (TextView)findViewById(R.id.foodName);
-            foodName = recipe_ko.get(tokens[0]);
+            this.foodName = recipe_ko.get(tokens[0]);
             textView.append(foodName);
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            foodIngredients = recipe_ko.get(tokens[1]);
+            this.foodIngredients = recipe_ko.get(tokens[1]);
             textView2.append(foodIngredients);
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            foodPreparation = recipe_ko.get(tokens[2]);
+            this.foodPreparation = recipe_ko.get(tokens[2]);
             textView3.append(foodPreparation);
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            foodCooking = recipe_ko.get(tokens[3]);
+            this.foodCooking = recipe_ko.get(tokens[3]);
             textView4.append(foodCooking);
         }
         else if (systemLanguage == "en") {
             TextView textView = (TextView)findViewById(R.id.foodName);
-            foodName = recipe_en.get(tokens[4]) + "(" + recipe_en.get(tokens[0]).trim() + ")";
+            this.foodName = recipe_en.get(tokens[4]) + "(" + recipe_en.get(tokens[0]).trim() + ")";
             textView.append(foodName);
             TextView textView2 = (TextView)findViewById(R.id.foodIngredients);
-            foodIngredients = recipe_en.get(tokens[1]);
+            this.foodIngredients = recipe_en.get(tokens[1]);
             textView2.append(foodIngredients);
             TextView textView3 = (TextView)findViewById(R.id.foodPreparation);
-            foodPreparation = recipe_en.get(tokens[2]);
+            this.foodPreparation = recipe_en.get(tokens[2]);
             textView3.append(foodPreparation);
             TextView textView4 = (TextView)findViewById(R.id.foodCooking);
-            foodCooking = recipe_en.get(tokens[3]);
+            this.foodCooking = recipe_en.get(tokens[3]);
             textView4.append(foodCooking);
         }
         else {
@@ -177,7 +178,7 @@ public class OutputActivity extends Activity {
         });
         String firstImageName = "food00"+dialog_foodID;
         img.setImageResource(getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
-        builder.setMessage("Are you satisfy the recipe?");
+        builder.setMessage("I think your picture is " + TCP_client.recipe_ko.get(tokens[6]).trim() + " this food. Is it right?");
         builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
