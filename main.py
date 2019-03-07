@@ -78,7 +78,6 @@ def main():
         exit()
 
     model = CNN(opts)
-
     if opts.type == 'train':
         print("[*] Training started")
         model.train()
@@ -91,7 +90,6 @@ def main():
 
     elif opts.type == 'pred':
         print('Predict result:', model.predict(Image.open('./img.jpg')))
-
 
 
 if __name__ == '__main__':
