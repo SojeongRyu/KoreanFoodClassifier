@@ -151,6 +151,18 @@ public class OutputActivity extends Activity {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
+    void sorry_dialog(){
+        AlertDialog.Builder sorry_dialog = new AlertDialog.Builder(this);
+        sorry_dialog.setMessage("I can not find you any other recipes.\nSorry for the inconvenience\n");
+        sorry_dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        sorry_dialog.show();
+    }
+
     void dialog_show(final String dialog_foodID){
         Log.e("img", img.toString());
         try {
@@ -179,8 +191,11 @@ public class OutputActivity extends Activity {
                     recipe_ko = TCP_client.recipe_ko;
                     recipe_en = TCP_client.recipe_en;
                     String new_dialog_foodID = recipe_ko.get(tokens[5]);
-                    dialog_show(new_dialog_foodID);
                     dialog_cnt++;
+                    dialog_show(new_dialog_foodID);
+                }
+                else if(dialog_cnt==1){
+                    sorry_dialog();
                 }
                 else {
                     finish();
