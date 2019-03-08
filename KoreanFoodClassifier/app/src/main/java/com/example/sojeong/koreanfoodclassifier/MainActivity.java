@@ -129,12 +129,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (requestCode == REQUEST_CODE_ANOTHER) {
-                Toast toast = Toast.makeText(getBaseContext(), "onActivityResult 메소드가 호출됨. 요청코드 : " + requestCode + "결과코드 : " + resultCode, Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getBaseContext(), "onActivityResult method called. Request code : " + requestCode + "Result code : " + resultCode, Toast.LENGTH_LONG);
                 toast.show();
 
                 if (resultCode == RESULT_OK) {
                     String name = intent.getExtras().getString("name");
-                    toast = Toast.makeText(getBaseContext(), "응답으로 전달된 name : " + name, Toast.LENGTH_LONG);
+                    toast = Toast.makeText(getBaseContext(), "name passed in response : " + name, Toast.LENGTH_LONG);
                     toast.show();
 
                     return;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else {
-            Toast.makeText(this, "저장공간이 접근 불가능한 기기입니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cannot access the storage space of this device.", Toast.LENGTH_SHORT).show();
             return;
         }
     }

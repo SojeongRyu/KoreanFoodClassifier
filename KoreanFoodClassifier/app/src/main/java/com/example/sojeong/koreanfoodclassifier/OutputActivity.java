@@ -62,8 +62,8 @@ public class OutputActivity extends Activity {
         imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
         Log.e("foodImg","food00"+foodId);
 
+        this.foodId = foodId;
         if (systemLanguage == "ko") {
-            this.foodId = foodId;
             TextView textView = (TextView)findViewById(R.id.foodName);
             this.foodName = recipe_ko.get(tokens[0]);
             textView.append(foodName);
@@ -96,7 +96,7 @@ public class OutputActivity extends Activity {
                 public void run() {
                     String originFoodName = recipe_en.get(tokens[0]);
                     foodName = getTranslatedString("en", systemLanguage, originFoodName);
-                    foodName =  recipe_en.get(tokens[4]) + " : " + foodName;
+                    foodName =  recipe_en.get(tokens[4]) + "(" + foodName.trim() + ")";
                     //foodName = foodName.replace("\r\n","\\n");
                     String originFoodIngredients = recipe_en.get(tokens[1]);
                     foodIngredients = getTranslatedString("en", systemLanguage, originFoodIngredients);
@@ -221,6 +221,12 @@ public class OutputActivity extends Activity {
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ifChecked_scrap();
+    }
+
     public void ifChecked_scrap() {
         liked = (CheckBox)findViewById(R.id.btn_selector);
         if(liked.isChecked()) {
@@ -244,11 +250,11 @@ public class OutputActivity extends Activity {
         String translatedString = "Text for Translated String";
         originString = originString.replace("\r\n","$");
 
-        //String clientId = "obY_tGKsObVUX_AY7b9u";//애플리케이션 수현클라이언트 아이디값";
-        //String clientSecret = "nEAjxFllry";//애플리케이션 수현클라이언트 시크릿값";
+        String clientId = "obY_tGKsObVUX_AY7b9u";//애플리케이션 수현클라이언트 아이디값";
+        String clientSecret = "nEAjxFllry";//애플리케이션 수현클라이언트 시크릿값";
 
-        String clientId = "ZKSqbDudRKbISBGmZm1k";//애플리케이션 소정클라이언트 아이디값";
-        String clientSecret = "ZtEH03SRb0";//애플리케이션 소정클라이언트 시크릿값";
+        //String clientId = "ZKSqbDudRKbISBGmZm1k";//애플리케이션 소정클라이언트 아이디값";
+        //String clientSecret = "ZtEH03SRb0";//애플리케이션 소정클라이언트 시크릿값";
 
         try {
             String text = URLEncoder.encode(originString, "UTF-8");
