@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         prefs = getSharedPreferences("Pref",MODE_PRIVATE);
         checkFirstRun();
-        Log.e("package name", getPackageName());
         tedPermission();
     }
 
@@ -177,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "KFC");
 
         if (!storageDir.exists()) {
-            Log.i("mCurrentPhotoPath1", storageDir.toString());
+            Log.i("mCurrentPhotoPath", storageDir.toString());
             storageDir.mkdirs();
         }
 

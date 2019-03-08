@@ -96,8 +96,6 @@ public class ScrappedActivity extends Activity {
     private AdapterView.OnItemClickListener onClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Log.e("onclick","클릭!!!!!");
-
             Intent intent = new Intent(getApplicationContext(), ClickedRecipeActivity.class);
             intent.putExtra("foodName",list.get(position));
             Log.e("click_foodName",list.get(position));

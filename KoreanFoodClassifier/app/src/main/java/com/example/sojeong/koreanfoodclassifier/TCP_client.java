@@ -90,9 +90,7 @@ public class TCP_client implements Runnable{
         try {
             dataOutput[outputStreamNum] = new DataOutputStream(socket.getOutputStream());
             byte[] buf = response.getBytes();
-            Log.e("noCnt", "" + noCnt);
             dataOutput[outputStreamNum].write(buf, 0, 1);
-            Log.e("sendUserResponse", "done");
         } catch (Exception e) {
             Log.e("sendUserResponse", e.toString());
         }
@@ -136,7 +134,6 @@ public class TCP_client implements Runnable{
             int i = 0;
             while(!(recv = bufferedReader.readLine().trim()).equals("recipe_en")) {
                 if (recv.equals(tokens[i])) {
-                    Log.e(tokens[i], recipe_ko.get(tokens[i]));
                     i++;
                     continue;
                 }
@@ -145,7 +142,6 @@ public class TCP_client implements Runnable{
             }
             while(!(recv = bufferedReader.readLine().trim()).equals("recipe_done")) {
                 if (recv.equals(tokens[i])) {
-                    Log.e(tokens[i] + "_en", recipe_en.get(tokens[i]));
                     i++;
                     continue;
                 }
