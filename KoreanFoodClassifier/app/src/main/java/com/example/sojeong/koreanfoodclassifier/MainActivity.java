@@ -3,7 +3,10 @@ package com.example.sojeong.koreanfoodclassifier;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +31,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    public SharedPreferences prefs;
     private static final String TAG = "KFC";
     public static final int REQUEST_CODE_ANOTHER = 1001;
 
@@ -54,8 +58,28 @@ public class MainActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = getSharedPreferences("Pref",MODE_PRIVATE);
+        checkFirstRun();
         Log.e("package name", getPackageName());
         tedPermission();
+    }
+
+    public void checkFirstRun(){
+        boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
+        if(isFirstRun){
+            final AlertDialog.Builder first_dialog = new AlertDialog.Builder(this);
+            first_dialog.setCancelable(false);
+            first_dialog.setTitle("Terms of service");
+            first_dialog.setMessage("We will use your pictures for noncommercial purposes.\nIf you do not agree with our policy, please stop using this application");
+            first_dialog.setPositiveButton("I got it", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            first_dialog.show();
+            prefs.edit().putBoolean("isFirstRun",false).apply();
+        }
     }
 
     public void onTakePictureBtnClicked(View v) {
