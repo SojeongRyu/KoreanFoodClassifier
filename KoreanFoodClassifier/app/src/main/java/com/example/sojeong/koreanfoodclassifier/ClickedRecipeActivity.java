@@ -53,21 +53,26 @@ public class ClickedRecipeActivity extends Activity {
             }
         }
 
-        liked = (CheckBox)findViewById(R.id.btn_selector);
-        ImageButton btnBack = (ImageButton)findViewById(R.id.btn_back2);
-        btnBack.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
-                if(!liked.isChecked()){
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("menu_name", foodName);
-                    setResult(RESULT_OK, resultIntent);
-                    Log.e("menu_name",foodName);
-                }
-                finish();
-            }
-        });
-
-
     }
 
+    public void onBackBtn2Clicked(View v) {
+        checkLikedAndPassFoodName();
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        checkLikedAndPassFoodName();
+        super.onBackPressed();
+    }
+
+    public void checkLikedAndPassFoodName() {
+        liked = (CheckBox)findViewById(R.id.btn_selector);
+        if(!liked.isChecked()) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("menu_name", foodName);
+            setResult(RESULT_OK, resultIntent);
+            Log.e("menu_name", foodName);
+        }
+    }
 }

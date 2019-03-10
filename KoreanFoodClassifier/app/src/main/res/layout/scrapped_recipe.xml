@@ -31,6 +31,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@android:color/transparent"
+                android:onClick="onBackBtn2Clicked"
                 android:padding="0dp"
                 android:src="@drawable/back" />
 
