@@ -67,6 +67,7 @@ class CNN(object):
         self.beta2 = args.beta2
         self.comment = args.comment
         self.type = args.type
+        self.fold_num = args.fold_num
         self.resl = 256
         self.num_cls = 10
         self.crop_size = 227
@@ -84,7 +85,7 @@ class CNN(object):
             self.CE_loss = nn.CrossEntropyLoss()
 
         # load dataset
-        if self.type == 'crossvalidation':
+        if self.type == 'cv':
             data_transform = transforms.Compose([
                 transforms.Resize(self.resl),
                 transforms.CenterCrop(self.crop_size),
@@ -95,7 +96,7 @@ class CNN(object):
             x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transform)
             for x in ['train', 'test']}
 
-            kf = KFold(n_splits=5, shuffle=True)
+            kf = KFold(n_splits=self.fold_num, shuffle=True)
 
             for i, (train_index, test_index) in enumerate(kf.split(dataset['train'])):
                 train_set = Subset(dataset['train'], train_index)
@@ -112,7 +113,7 @@ class CNN(object):
 
             print("Average Accuracy: %d/%d (%f)" % (self.total_correct, self.total_test_len, 100. * (self.total_correct / self.total_test_len)))
 
-        else:
+        elif self.type in ['train', 'test']:
             # load dataset
             data_transforms = {
                 'train': transforms.Compose([
@@ -135,7 +136,7 @@ class CNN(object):
                 for x in ['train', 'test']}
 
 
-    def train(self, fold_num = -1, trainloader = None):
+    def train(self, trainloader = None):
         self.train_hist = {}
         self.train_hist['G_loss'] = []
         self.train_hist['per_epoch_time'] = []
@@ -169,37 +170,37 @@ class CNN(object):
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
             if not os.path.exists(self.result_dir):
                 os.makedirs(self.result_dir)
-            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment, fold_num = fold_num)
-            self.save(fold_num)
+            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment, fold_num=self.fold_num)
+            self.save()
         self.train_hist['total_time'].append(time.time() - start_time)
         print("Training finished!... save training results")
         print("Total time:", self.train_hist['total_time'][0])
         print("Per epoch time:", self.train_hist['per_epoch_time'], '\n')
-        self.save(fold_num)
+        self.save()
 
-    def save(self, fold_num):
+    def save(self):
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-        if fold_num == -1:
+        if self.fold_num == -1:
             torch.save(self.net.state_dict(),
                        os.path.join(self.save_dir, 'model_' + self.comment  + '.pkl'))
             with open(os.path.join(self.save_dir, 'history_' + self.comment  + '.pkl'), 'wb') as f:
                 pickle.dump(self.train_hist, f)
         else:
-            torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(fold_num) + '.pkl'))
-            with open(os.path.join(self.save_dir, 'history_' + self.comment + '_fold' + str(fold_num) + '.pkl'), 'wb') as f:
+            torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(self.fold_num) + '.pkl'))
+            with open(os.path.join(self.save_dir, 'history_' + self.comment + '_fold' + str(self.fold_num) + '.pkl'), 'wb') as f:
                 pickle.dump(self.train_hist, f)
 
-    def load(self, fold_num):
-        if fold_num == -1:
+    def load(self):
+        if self.fold_num == -1:
             self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '.pkl')))
         else:
-            self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(fold_num) + '.pkl')))
+            self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(self.fold_num) + '.pkl')))
 
-    def test(self, fold_num=-1, testloader=None):
+    def test(self, testloader=None):
         self.net.eval()
-        self.load(fold_num)
+        self.load()
 
         if testloader == None:
             testloader = self.dataloaders['test']
@@ -231,9 +232,9 @@ class CNN(object):
             print('class %d:' % i, error_cnt[i],
                   '\taccuracy: %f(%d/%d)' % (error_cnt[i][i] / sum(error_cnt[i]) * 100, error_cnt[i][i], sum(error_cnt[i])))
 
-    def predict(self, img, fold_num=-1):
+    def predict(self, img):
         self.net.eval()
-        self.load(fold_num)
+        self.load()
 
         data_transform = transforms.Compose([
                 transforms.Resize(self.resl),

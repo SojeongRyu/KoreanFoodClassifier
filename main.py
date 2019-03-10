@@ -27,8 +27,8 @@ def parse_args():
     parser.add_argument('--gpu_mode', type=str_to_bool, default='True')
     parser.add_argument('--num_workers', type=int, default=4, help='Number of threads')
     parser.add_argument('--comment', type=str, default='', help='Comment to pyt on model_name')
-
-    parser.add_argument('--type', type=str, default='train', help='train or test or pred')
+    parser.add_argument('--type', type=str, default='train', help='train or test or pred or cv')
+    parser.add_argument('--fold_num', type=int, default=-1, help='fold number')
 
     return check_args(parser.parse_args())
 

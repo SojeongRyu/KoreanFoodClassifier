@@ -10,7 +10,9 @@ PORT = 16161
 BUFSIZE = 1024
 ADDR = (HOST, PORT)
 CLIENT_NUM = 5
-COMMENT = 'data_add_soy'
+COMMENT = 'cross_validation_test_with_large_data'
+DATAROOT_DIR = './data_clean_samenum/'
+FOLD_NUM = 3
 
 def main():
     # 모델 불러오기
@@ -39,7 +41,7 @@ def main():
 
             recvImg(connectionSocket)
 
-            pred_results = model.predict(Image.open('./img.jpg'), -1)
+            pred_results = model.predict(Image.open('./img.jpg'))
 
             sendRecipe(connectionSocket, pred_results[0][0], pred_results[0][1])
             print("---------first recipe send done---------")
@@ -136,7 +138,7 @@ def str_to_bool(v):
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--dataroot_dir', type=str, default='./' + COMMENT + '/', help='Root path of data')
+    parser.add_argument('--dataroot_dir', type=str, default=DATAROOT_DIR, help='Root path of data')
     parser.add_argument('--epoch', type=int, default=25, help='The number of epochs to run')
     parser.add_argument('--batch_size', type=int, default=100, help='The size of batch')
     parser.add_argument('--sample_num', type=int, default=64, help='The number of samples to test')
@@ -148,8 +150,8 @@ def parse_args():
     parser.add_argument('--gpu_mode', type=str_to_bool, default='False')
     parser.add_argument('--num_workers', type=int, default=4, help='Number of threads')
     parser.add_argument('--comment', type=str, default=COMMENT, help='Comment to pyt on model_name')
-
     parser.add_argument('--type', type=str, default='pred', help='train or test or pred')
+    parser.add_argument('--fold_num', type=int, default=FOLD_NUM, help='fold number')
 
     return check_args(parser.parse_args())
 
