@@ -1,6 +1,6 @@
 import argparse, os
 from PIL import Image
-from CNN import CNN
+from CNN import CNN, crossValidation
 
 def str_to_bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -80,16 +80,21 @@ def main():
     model = CNN(opts)
     if opts.type == 'train':
         print("[*] Training started")
-        model.train()
+        model.train(fold_num=opts.fold_num)
         print("[*] Training finished")
 
     elif opts.type == 'test':
         print("[*] Test started")
-        model.test()
+        model.test(fold_num=opts.fold_num)
         print("[*] Test finished")
 
+    elif opts.type == 'cv':
+        print("[*] cv started")
+        crossValidation(opts)
+        print("[*] cv finished")
+
     elif opts.type == 'pred':
-        print('Predict result:', model.predict(Image.open('./img.jpg')))
+        print('Predict result:', img=model.predict(Image.open('./img.jpg')), fold_num=opts.fold_num)
 
 
 if __name__ == '__main__':

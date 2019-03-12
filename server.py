@@ -10,9 +10,9 @@ PORT = 16161
 BUFSIZE = 1024
 ADDR = (HOST, PORT)
 CLIENT_NUM = 5
-COMMENT = 'cross_validation_test_with_large_data'
-DATAROOT_DIR = './data_clean_samenum/'
-FOLD_NUM = 3
+COMMENT = 'data_clean_70epoch'
+DATAROOT_DIR = './data_clean/'
+FOLD_NUM = -1
 
 def main():
     # 모델 불러오기
@@ -41,7 +41,7 @@ def main():
 
             recvImg(connectionSocket)
 
-            pred_results = model.predict(Image.open('./img.jpg'))
+            pred_results = model.predict(img=Image.open('./img.jpg'), fold_num=opts.fold_num)
 
             sendRecipe(connectionSocket, pred_results[0][0], pred_results[0][1])
             print("---------first recipe send done---------")

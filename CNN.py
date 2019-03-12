@@ -84,36 +84,7 @@ class CNN(object):
         else:
             self.CE_loss = nn.CrossEntropyLoss()
 
-        # load dataset
-        if self.type == 'cv':
-            data_transform = transforms.Compose([
-                transforms.Resize(self.resl),
-                transforms.CenterCrop(self.crop_size),
-                transforms.ToTensor()
-            ])
-
-            dataset = {
-            x: datasets.ImageFolder(root=os.path.join(self.dataroot_dir, (x + '/')), transform=data_transform)
-            for x in ['train', 'test']}
-
-            kf = KFold(n_splits=self.fold_num, shuffle=True)
-
-            for i, (train_index, test_index) in enumerate(kf.split(dataset['train'])):
-                train_set = Subset(dataset['train'], train_index)
-                test_set = Subset(dataset['train'], test_index)
-                trainloader = DataLoader(train_set, batch_size=self.batch_size, shuffle=True,
-                                         num_workers=self.num_workers, pin_memory=False)
-                testloader = DataLoader(test_set, batch_size=self.batch_size, shuffle=True,
-                                         num_workers=self.num_workers, pin_memory=False)
-
-                print('\n\n**********[Fold : {}, train : {}, test : {}]**********'.format(i + 1, len(trainloader.dataset), len(testloader.dataset)))
-
-                self.train(i + 1, trainloader)
-                self.test(i + 1, testloader)
-
-            print("Average Accuracy: %d/%d (%f)" % (self.total_correct, self.total_test_len, 100. * (self.total_correct / self.total_test_len)))
-
-        elif self.type in ['train', 'test']:
+        if self.type in ['train', 'test']:
             # load dataset
             data_transforms = {
                 'train': transforms.Compose([
@@ -136,7 +107,7 @@ class CNN(object):
                 for x in ['train', 'test']}
 
 
-    def train(self, trainloader = None):
+    def train(self, fold_num=-1, trainloader = None):
         self.train_hist = {}
         self.train_hist['G_loss'] = []
         self.train_hist['per_epoch_time'] = []
@@ -170,43 +141,44 @@ class CNN(object):
             self.train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
             if not os.path.exists(self.result_dir):
                 os.makedirs(self.result_dir)
-            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment, fold_num=self.fold_num)
-            self.save()
+            utils.loss_plot(self.train_hist, self.result_dir, comment=self.comment, fold_num=fold_num)
+            self.save(fold_num)
         self.train_hist['total_time'].append(time.time() - start_time)
         print("Training finished!... save training results")
         print("Total time:", self.train_hist['total_time'][0])
         print("Per epoch time:", self.train_hist['per_epoch_time'], '\n')
-        self.save()
+        self.save(fold_num)
 
-    def save(self):
+    def save(self, fold_num=-1):
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-        if self.fold_num == -1:
+        if fold_num == -1:
             torch.save(self.net.state_dict(),
                        os.path.join(self.save_dir, 'model_' + self.comment  + '.pkl'))
             with open(os.path.join(self.save_dir, 'history_' + self.comment  + '.pkl'), 'wb') as f:
                 pickle.dump(self.train_hist, f)
         else:
-            torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(self.fold_num) + '.pkl'))
-            with open(os.path.join(self.save_dir, 'history_' + self.comment + '_fold' + str(self.fold_num) + '.pkl'), 'wb') as f:
+            torch.save(self.net.state_dict(), os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(fold_num) + '.pkl'))
+            with open(os.path.join(self.save_dir, 'history_' + self.comment + '_fold' + str(fold_num) + '.pkl'), 'wb') as f:
                 pickle.dump(self.train_hist, f)
 
-    def load(self):
-        if self.fold_num == -1:
+    def load(self, fold_num=-1):
+        if fold_num == -1:
             self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '.pkl')))
         else:
-            self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(self.fold_num) + '.pkl')))
+            self.net.load_state_dict(torch.load(os.path.join(self.save_dir, 'model_' + self.comment + '_fold' + str(fold_num) + '.pkl')))
 
-    def test(self, testloader=None):
+    def test(self, fold_num=-1, testloader=None):
         self.net.eval()
-        self.load()
+        self.load(fold_num)
 
         if testloader == None:
             testloader = self.dataloaders['test']
 
-        test_loss, correct = 0, 0
+        test_loss, correct, correct_top2 = 0, 0, 0
         error_cnt = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
+        error_cnt_top2 = [[0 for x in range(self.num_cls)] for y in range(self.num_cls)]
         with torch.no_grad():
             for img, target in testloader:
                 if self.gpu_mode:
@@ -217,24 +189,39 @@ class CNN(object):
                 output = self.net(img)
                 test_loss += self.CE_loss(output, target).item()
                 pred = output.argmax(dim=1, keepdim=True)
+                pred_top2 = output
+                for i in range(len(pred_top2)):
+                    pred_top2[i][pred[i].item()] = -float('inf')
+                pred_top2 = pred_top2.argmax(dim=1, keepdim=True)
+
                 for i in range(len(target)):
                     error_cnt[target[i].item()][pred.view_as(target)[i].item()] += 1
+                    if target[i] == pred_top2[i]:
+                        error_cnt_top2[target[i].item()][target[i].item()] += 1
+                    else:
+                        error_cnt_top2[target[i].item()][pred.view_as(target)[i].item()] += 1
                 correct += pred.eq(target.view_as(pred)).sum().item()
+                correct_top2 += pred.eq(target.view_as(pred)).sum().item() + pred_top2.eq(target.view_as(pred)).sum().item()
         test_loss /= len(testloader.dataset)
 
         self.total_correct += correct
         self.total_test_len += len(testloader.dataset)
         print('Average loss: %f' % test_loss,
-              "Accuracy: %d/%d (%f)" % (correct, len(testloader.dataset),
-                                        100. * correct / len(testloader.dataset)))
+              "Accuracy: %d/%d (%f)" % (correct, len(testloader.dataset), 100. * correct / len(testloader.dataset)),
+              "Accuracy top 2: %d/%d (%f)" % (correct_top2, len(testloader.dataset), 100. * correct_top2 / len(testloader.dataset)))
         print('error tracking')
         for i in range(self.num_cls):
             print('class %d:' % i, error_cnt[i],
                   '\taccuracy: %f(%d/%d)' % (error_cnt[i][i] / sum(error_cnt[i]) * 100, error_cnt[i][i], sum(error_cnt[i])))
+        print('\nerror tracking top 2')
+        for i in range(self.num_cls):
+            print('class %d:' % i, error_cnt_top2[i],
+                  '\taccuracy: %f(%d/%d)' % (
+                  error_cnt_top2[i][i] / sum(error_cnt_top2[i]) * 100, error_cnt_top2[i][i], sum(error_cnt_top2[i])))
 
-    def predict(self, img):
+    def predict(self, img, fold_num=-1):
         self.net.eval()
-        self.load()
+        self.load(fold_num)
 
         data_transform = transforms.Compose([
                 transforms.Resize(self.resl),
@@ -261,3 +248,39 @@ class CNN(object):
 
         output_sorted = sorted(output_dict.items(), key=operator.itemgetter(1), reverse=True)
         return output_sorted[0:2]
+
+
+def crossValidation(args) :
+    # load dataset
+    data_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(227),
+        transforms.ToTensor()
+    ])
+
+    total_correct = 0
+    total_test_len = 0
+
+    dataset = {
+        x: datasets.ImageFolder(root=os.path.join(args.dataroot_dir, (x + '/')), transform=data_transform)
+        for x in ['train', 'test']}
+
+    kf = KFold(n_splits=args.fold_num, shuffle=True)
+
+    for i, (train_index, test_index) in enumerate(kf.split(dataset['train'])):
+        model = CNN(args)
+
+        train_set = Subset(dataset['train'], train_index)
+        test_set = Subset(dataset['train'], test_index)
+        trainloader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=False)
+        testloader = DataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=False)
+
+        print('\n\n**********[Fold : {}, train : {}, test : {}]**********'
+              .format(i + 1, len(trainloader.dataset), len(testloader.dataset)))
+        model.train(i + 1, trainloader)
+        model.test(i + 1, testloader)
+        total_correct += model.total_correct
+        total_test_len += model.total_test_len
+
+    print("Average Accuracy: %d/%d (%f)"
+          % (total_correct, total_test_len, 100. * (total_correct / total_test_len)))
