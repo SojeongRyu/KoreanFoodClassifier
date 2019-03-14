@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_TAKE_ALBUM = 2222;
     private static final int REQUEST_IMAGE_CROP = 3333;
     private String mCurrentPhotoPath;
-    private Uri imageUri;
     private Uri photoURI, albumURI;
     private boolean isAlbum = false;
 
@@ -231,6 +230,11 @@ public class MainActivity extends AppCompatActivity {
 
         TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
         tcp_client.startTCP(false, 0);
+
+        albumURI = null;
+        photoURI = null;
+        mCurrentPhotoPath = null;
+        isAlbum = false;
 
         Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
         startActivity(intent);
