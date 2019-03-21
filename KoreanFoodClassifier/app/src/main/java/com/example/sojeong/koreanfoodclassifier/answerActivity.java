@@ -29,5 +29,6 @@ public class answerActivity extends Activity {
         RadioButton rb1 = (RadioButton)findViewById(R.id.radio1);
         RadioButton rb2 = (RadioButton)findViewById(R.id.radio2);
 
+
     }
 }

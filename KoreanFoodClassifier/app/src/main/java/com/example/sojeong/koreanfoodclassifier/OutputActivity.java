@@ -2,8 +2,11 @@ package com.example.sojeong.koreanfoodclassifier;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -26,14 +32,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.channels.Selector;
 import java.util.*;
 import android.widget.TextView;
 
 import android.util.Log;
 
 public class OutputActivity extends Activity {
+    /*
     HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
+    */
     private ImageView img;
     private int no_cnt = 0;
     private CheckBox liked;
@@ -41,12 +50,21 @@ public class OutputActivity extends Activity {
     private String foodId, foodName, foodIngredients, foodPreparation, foodCooking;
     String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName", "food id", "predict percentage"};
 
+    HashMap<String ,String> recipe_ko;
+    HashMap<String ,String> recipe_en;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_output_display);
-        img = (ImageView)findViewById(R.id.dialog_img);
+
+        Intent intent = getIntent();
+
+        recipe_ko = (HashMap<String,String>)intent.getSerializableExtra("hash_ko");
+        recipe_en = (HashMap<String,String>)intent.getSerializableExtra("hash_en");
         String dialog_foodID = recipe_ko.get(tokens[5]);
-        dialog_show(dialog_foodID);
+
+        foodInfo_show(dialog_foodID);
+
 
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
@@ -59,6 +77,7 @@ public class OutputActivity extends Activity {
         final String systemLanguage = Locale.getDefault().getLanguage();
         ImageView imageView = (ImageView)findViewById(R.id.foodImg);
         String foodImgName = "food00" + foodId;
+        Log.e("foodImgName", getPackageName());
         imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
         Log.e("foodImg","food00"+foodId);
 
