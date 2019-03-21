@@ -65,7 +65,6 @@ public class OutputActivity extends Activity {
 
         foodInfo_show(dialog_foodID);
 
-
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();

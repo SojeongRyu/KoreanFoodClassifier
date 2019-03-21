@@ -9,7 +9,8 @@
             android:id = "@+id/img_test"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/food000"/>
+            android:src="@drawable/food000"
+            />
         <TextView
             android:id = "@+id/text_test"
             android:layout_width="wrap_content"
@@ -18,7 +19,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:text = "foodname"
-            android:textSize="30dp"/>
+            android:textSize="20dp"/>
 
     </RelativeLayout>
 
