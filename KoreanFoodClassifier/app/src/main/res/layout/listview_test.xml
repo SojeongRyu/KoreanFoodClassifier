@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/notice_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="choose only one!!"
+            android:textSize="20dp"
+            android:layout_marginTop="30dp"
+            android:textColor="@android:color/holo_green_dark"
+            android:layout_centerHorizontal="true"/>
+
+        <ListView
+            android:id="@+id/lv_test"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/notice_test"
+            android:listSelector="@android:color/holo_green_dark"
+            android:layout_marginTop="30dp">
+
+        </ListView>
+
+        <Button
+            android:id="@+id/OK_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="OK"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

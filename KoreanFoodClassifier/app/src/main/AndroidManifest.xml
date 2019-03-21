@@ -33,6 +33,7 @@
         <activity android:name=".ClickedRecipeActivity"/>
         <activity android:name=".OutputActivity"/>
         <activity android:name=".answerActivity"/>
+        <activity android:name=".listviewTestActivity"/>
 
     </application>
 
