@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,8 +22,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
 public class listviewTestActivity extends Activity {
     private ArrayList<listviewItem_test> list;
@@ -110,8 +106,8 @@ public class listviewTestActivity extends Activity {
     public void initList(){
         adapter.clearItem();
         adapter.notifyDataSetChanged();
-        adapter.addItem(FoodName1, getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
-        adapter.addItem(FoodName2, getResources().getIdentifier(secondImageName.trim(),"drawable",getPackageName()));
+        adapter.addItem("Name: "+FoodName1+"\nAccuracy: " + recipe_ko1.get(tokens[6]).trim(), getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
+        adapter.addItem("Name: "+FoodName2+"\nAccuracy: " + recipe_ko2.get(tokens[6]).trim(), getResources().getIdentifier(secondImageName.trim(),"drawable",getPackageName()));
     }
 
     private void sendResponse(boolean isYes, int noCnt) {
