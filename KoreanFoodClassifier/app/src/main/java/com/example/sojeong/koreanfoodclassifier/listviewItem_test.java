@@ -4,6 +4,7 @@ public class listviewItem_test {
 
     private String foodName;
     private int foodImg;
+    private String accuracy;
 
     public String getFoodName(){
         return foodName;
@@ -20,4 +21,8 @@ public class listviewItem_test {
     public void setFoodImg(int foodImg) {
         this.foodImg = foodImg;
     }
+
+    public void setAccuracy(String accuracy){this.accuracy = accuracy;}
+
+    public String getAccuracy(){ return accuracy; }
 }

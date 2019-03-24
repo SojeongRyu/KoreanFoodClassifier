@@ -23,6 +23,7 @@
                 android:button="@drawable/scrap_button_on_off"
                 android:duplicateParentState="false" />
 
+
             <ImageButton
                 android:id="@+id/btn_back2"
                 android:layout_width="45dp"
@@ -111,6 +112,14 @@
                 android:text=""
                 android:textSize="20dp" />
 
+            <Button
+                android:id="@+id/exit_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/foodCooking"
+                android:layout_centerHorizontal="true"
+                android:text="exit"/>
+
 
         </RelativeLayout>
     </ScrollView>
@@ -119,5 +128,6 @@
         android:id = "@+id/dialog_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 
 </android.support.constraint.ConstraintLayout>

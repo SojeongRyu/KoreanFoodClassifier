@@ -45,8 +45,10 @@ public class TCP_client implements Runnable{
     }
 
     public void startTCP(boolean isYes, int noCnt) {
+
         this.isYes = isYes;
         this.noCnt = noCnt;
+
         Thread thread = new Thread(this);
         thread.start();
         try {
@@ -71,8 +73,10 @@ public class TCP_client implements Runnable{
                 else if (noCnt == 1) {
                     sendUserResponse("N", 2);
                     recvRecipe();
+                    finishConnection();
                 }
                 else if (noCnt == 2) {
+                    Log.e("CNT TCP: 2", "enter here!!!!!!!!!!!!");
                     sendUserResponse("N", 3);
                     finishConnection();
                 }
