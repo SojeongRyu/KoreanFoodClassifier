@@ -4,15 +4,21 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -22,6 +28,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class listviewTestActivity extends Activity {
     private ArrayList<listviewItem_test> list;
@@ -40,7 +48,7 @@ public class listviewTestActivity extends Activity {
     private String secondImageName;
     private String FoodName1;
     private String FoodName2;
-    int current_position=0;
+    int current_position=-1;
 
     private ListviewAdapter adapter;
 
@@ -52,7 +60,18 @@ public class listviewTestActivity extends Activity {
 
         listView = (ListView) findViewById(R.id.lv_test);
         listView.setAdapter(adapter);
+        TextView tvLinkify = (TextView)findViewById(R.id.notice_test);
+        String text = "**If you think you don't have the recipe you want, press here.\n";
+        tvLinkify.setText(text);
+        Linkify.TransformFilter mTransform = new Linkify.TransformFilter() {
+            @Override
+            public String transformUrl(Matcher match, String url) {
+                return "";
+            }
+        };
 
+        Pattern pattern1 = Pattern.compile("here");
+        Linkify.addLinks(tvLinkify, pattern1,"" ,null,mTransform);
         final String dialog_foodID_top1 = recipe_ko1.get(tokens[5]);
 
         FoodName1 = recipe_en1.get(tokens[0]);
@@ -92,7 +111,7 @@ public class listviewTestActivity extends Activity {
                     startActivity(intent);
                 }
                 else{
-
+                    Toast.makeText(getApplicationContext(),"Select one food",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -106,8 +125,8 @@ public class listviewTestActivity extends Activity {
     public void initList(){
         adapter.clearItem();
         adapter.notifyDataSetChanged();
-        adapter.addItem("Name: "+FoodName1+"\nAccuracy: " + recipe_ko1.get(tokens[6]).trim(), getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
-        adapter.addItem("Name: "+FoodName2+"\nAccuracy: " + recipe_ko2.get(tokens[6]).trim(), getResources().getIdentifier(secondImageName.trim(),"drawable",getPackageName()));
+        adapter.addItem(FoodName1,recipe_ko1.get(tokens[6]).trim(),getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
+        adapter.addItem(FoodName2,recipe_ko2.get(tokens[6]).trim(),getResources().getIdentifier(secondImageName.trim(),"drawable",getPackageName()));
     }
 
     private void sendResponse(boolean isYes, int noCnt) {

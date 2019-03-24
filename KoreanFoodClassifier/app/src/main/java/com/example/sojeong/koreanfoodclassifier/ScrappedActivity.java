@@ -106,10 +106,7 @@ public class ScrappedActivity extends Activity {
     };
 
     public void onBackBtn1Clicked(View v){
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("name", "mike");
 
-        setResult(RESULT_OK, resultIntent);
         finish();
     }
 

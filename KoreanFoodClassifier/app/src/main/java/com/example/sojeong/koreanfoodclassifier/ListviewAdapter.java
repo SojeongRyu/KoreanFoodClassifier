@@ -1,6 +1,10 @@
 package com.example.sojeong.koreanfoodclassifier;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +35,17 @@ public class ListviewAdapter extends BaseAdapter {
         ImageView img = (ImageView)view.findViewById(R.id.img_test);
         TextView txt = (TextView)view.findViewById(R.id.text_test);
 
-        txt.setText(String.valueOf(listItem.getFoodName()));
+
+        String str = String.valueOf(listItem.getFoodName());
+        String acc = String.valueOf(listItem.getAccuracy());
+        String msg = "I think your picture is\n\n"+str+"\nwith "+acc+" accuracy.";
+        SpannableStringBuilder ssb1 = new SpannableStringBuilder(msg);
+        int size = str.length();
+        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),23,23+size,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),31+size,31+size+acc.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        txt.setText(ssb1);
         img.setImageResource(Integer.valueOf(listItem.getFoodImg()));
 
 
@@ -39,9 +53,10 @@ public class ListviewAdapter extends BaseAdapter {
         return view;
     }
 
-    public void addItem(String name, Integer img){
+    public void addItem(String name, String accuracy, Integer img){
         listviewItem_test item = new listviewItem_test();
 
+        item.setAccuracy(accuracy);
         item.setFoodName(name);
         item.setFoodImg(img);
 
