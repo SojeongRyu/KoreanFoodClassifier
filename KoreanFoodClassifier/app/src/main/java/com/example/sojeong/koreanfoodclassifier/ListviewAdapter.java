@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,11 +40,12 @@ public class ListviewAdapter extends BaseAdapter {
 
         String str = String.valueOf(listItem.getFoodName());
         String acc = String.valueOf(listItem.getAccuracy());
-        String msg = "I think your picture is\n\n"+str+"\nwith "+acc+" accuracy.";
+        String msg = str+"\n"+acc+" certainty.";
         SpannableStringBuilder ssb1 = new SpannableStringBuilder(msg);
         int size = str.length();
-        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),23,23+size,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),31+size,31+size+acc.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb1.setSpan(new AbsoluteSizeSpan(70),0,size,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),0,size,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb1.setSpan(new ForegroundColorSpan(Color.parseColor("#5F00FF")),size+1,size+1+acc.length(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
         txt.setText(ssb1);

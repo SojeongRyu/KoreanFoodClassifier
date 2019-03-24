@@ -71,7 +71,7 @@ public class listviewTestActivity extends Activity {
         };
 
         Pattern pattern1 = Pattern.compile("here");
-        Linkify.addLinks(tvLinkify, pattern1,"" ,null,mTransform);
+        Linkify.addLinks(tvLinkify, pattern1,"myapp://",null,mTransform);
         final String dialog_foodID_top1 = recipe_ko1.get(tokens[5]);
 
         FoodName1 = recipe_en1.get(tokens[0]);
