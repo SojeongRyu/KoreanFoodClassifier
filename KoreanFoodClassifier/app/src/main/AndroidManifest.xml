@@ -33,7 +33,18 @@
         <activity android:name=".ClickedRecipeActivity"/>
         <activity android:name=".OutputActivity"/>
         <activity android:name=".answerActivity"/>
-        <activity android:name=".listviewTestActivity"/>
+        <activity
+            android:name=".listviewTestActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".sorryActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="myapp"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
+        </activity>
+
 
     </application>
 
