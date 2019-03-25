@@ -1,6 +1,8 @@
 from __future__ import print_function
 import os
+from torchvision import utils
 import torch.nn as nn
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -17,7 +19,7 @@ def initialize_weights(net):
             m.bias.data.zero_()
 
 
-def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], net_num = 0, comment=''):
+def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], comment='', fold_num=-1, sub_net_name=''):
     try:
         x = range(len(hist['D_loss']))
     except:
@@ -66,8 +68,12 @@ def loss_plot(hist, path='.', y_max=None, use_subplot=False, keys_to_show=[], ne
             x_min, x_max, y_min, _ = plt.axis()
             plt.axis((x_min, x_max, -y_max / 20, y_max))
 
-    path = os.path.join(path, 'loss_%d_' % net_num + comment + '.png')
-
+    fold_info = ''
+    if fold_num != -1:
+        fold_info = '_fold' + str(fold_num)
+    if len(sub_net_name) > 0:
+        sub_net_name = '_' + sub_net_name
+    path = os.path.join(path, 'loss_' + comment + fold_info + sub_net_name + '.png')
     plt.savefig(path)
 
     plt.close()

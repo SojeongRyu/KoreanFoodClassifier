@@ -1,0 +1,29 @@
+comment: data_clean_70epoch_0.9beta1
+model and loss plot -> ./model/model_data_clean_70epoch_0.9beta1
+Namespace(batch_size=100, beta1=0.9, beta2=0.999, comment='data_clean_70epoch_0.9beta1', dataroot_dir='./data_clean', epoch=70, fold_num=-1, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.003577 Accuracy: 889/996 (89.257028) Accuracy top 2: 972/996 (97.590361)
+error tracking
+class 0: [92, 0, 0, 0, 0, 3, 0, 2, 1, 0]        accuracy: 93.877551(92/98)
+class 1: [0, 97, 1, 0, 0, 0, 0, 1, 0, 1]        accuracy: 97.000000(97/100)
+class 2: [0, 1, 97, 0, 0, 1, 0, 0, 0, 0]        accuracy: 97.979798(97/99)
+class 3: [7, 1, 2, 83, 0, 0, 2, 3, 0, 2]        accuracy: 83.000000(83/100)
+class 4: [12, 0, 0, 0, 82, 2, 2, 0, 2, 0]       accuracy: 82.000000(82/100)
+class 5: [1, 1, 1, 1, 0, 87, 0, 1, 0, 8]        accuracy: 87.000000(87/100)
+class 6: [2, 0, 4, 1, 2, 1, 86, 3, 0, 0]        accuracy: 86.868687(86/99)
+class 7: [0, 1, 5, 5, 0, 1, 3, 83, 0, 2]        accuracy: 83.000000(83/100)
+class 8: [4, 0, 2, 0, 2, 2, 1, 4, 85, 0]        accuracy: 85.000000(85/100)
+class 9: [0, 0, 0, 1, 0, 2, 0, 0, 0, 97]        accuracy: 97.000000(97/100)
+
+error tracking top 2
+class 0: [97, 0, 0, 0, 0, 1, 0, 0, 0, 0]        accuracy: 98.979592(97/98)
+class 1: [0, 100, 0, 0, 0, 0, 0, 0, 0, 0]       accuracy: 100.000000(100/100)
+class 2: [0, 1, 98, 0, 0, 0, 0, 0, 0, 0]        accuracy: 98.989899(98/99)
+class 3: [3, 0, 0, 95, 0, 0, 0, 2, 0, 0]        accuracy: 95.000000(95/100)
+class 4: [0, 0, 0, 0, 97, 2, 1, 0, 0, 0]        accuracy: 97.000000(97/100)
+class 5: [0, 0, 0, 0, 0, 100, 0, 0, 0, 0]       accuracy: 100.000000(100/100)
+class 6: [1, 0, 1, 0, 0, 0, 94, 3, 0, 0]        accuracy: 94.949495(94/99)
+class 7: [0, 0, 0, 0, 0, 0, 2, 97, 0, 1]        accuracy: 97.000000(97/100)
+class 8: [1, 0, 2, 0, 1, 0, 0, 2, 94, 0]        accuracy: 94.000000(94/100)
+class 9: [0, 0, 0, 0, 0, 0, 0, 0, 0, 100]       accuracy: 100.000000(100/100)
+[*] Test finished

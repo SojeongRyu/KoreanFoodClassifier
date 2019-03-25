@@ -1,0 +1,94 @@
+(SSS) C:\Users\405B\KFC>python main.py --comment cross_validation_test_with_large_data --dataroot_dir ./data_clean_samenum --epoch 30 --batch_size 100 --type test --fold_num 1
+comment: cross_validation_test_with_large_data
+model and loss plot -> ./model/model_cross_validation_test_with_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='cross_validation_test_with_large_data', dataroot_dir='./data_clean_samenum', epoch=30, fold_num=1, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.012878 Accuracy: 358/497 (72.032193)
+error tracking
+class 0: [31, 0, 0, 0, 3, 0, 0, 3, 11, 0]       accuracy: 64.583333(31/48)
+class 1: [0, 41, 3, 0, 5, 0, 0, 1, 0, 0]        accuracy: 82.000000(41/50)
+class 2: [0, 3, 39, 0, 2, 1, 0, 4, 1, 0]        accuracy: 78.000000(39/50)
+class 3: [3, 1, 0, 39, 3, 0, 0, 0, 4, 0]        accuracy: 78.000000(39/50)
+class 4: [8, 0, 1, 0, 32, 0, 2, 0, 7, 0]        accuracy: 64.000000(32/50)
+class 5: [6, 0, 0, 3, 0, 33, 1, 1, 1, 5]        accuracy: 66.000000(33/50)
+class 6: [5, 0, 3, 1, 6, 2, 27, 1, 4, 0]        accuracy: 55.102041(27/49)
+class 7: [0, 0, 4, 0, 5, 1, 1, 31, 8, 0]        accuracy: 62.000000(31/50)
+class 8: [2, 0, 1, 0, 1, 0, 1, 1, 44, 0]        accuracy: 88.000000(44/50)
+class 9: [0, 2, 1, 0, 0, 5, 1, 0, 0, 41]        accuracy: 82.000000(41/50)
+[*] Test finished
+
+(SSS) C:\Users\405B\KFC>python main.py --comment cross_validation_test_with_large_data --dataroot_dir ./data_clean_samenum --epoch 30 --batch_size 100 --type test --fold_num 2
+comment: cross_validation_test_with_large_data
+model and loss plot -> ./model/model_cross_validation_test_with_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='cross_validation_test_with_large_data', dataroot_dir='./data_clean_samenum', epoch=30, fold_num=2, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.014061 Accuracy: 391/497 (78.672032)
+error tracking
+class 0: [39, 0, 0, 0, 2, 0, 1, 5, 1, 0]        accuracy: 81.250000(39/48)
+class 1: [0, 43, 4, 0, 2, 0, 0, 1, 0, 0]        accuracy: 86.000000(43/50)
+class 2: [0, 0, 46, 0, 0, 2, 0, 1, 0, 1]        accuracy: 92.000000(46/50)
+class 3: [5, 0, 0, 38, 2, 3, 1, 0, 1, 0]        accuracy: 76.000000(38/50)
+class 4: [5, 0, 0, 0, 37, 0, 2, 0, 6, 0]        accuracy: 74.000000(37/50)
+class 5: [1, 0, 2, 4, 0, 38, 1, 0, 0, 4]        accuracy: 76.000000(38/50)
+class 6: [3, 0, 4, 2, 2, 3, 33, 1, 1, 0]        accuracy: 67.346939(33/49)
+class 7: [0, 2, 6, 0, 2, 1, 1, 35, 3, 0]        accuracy: 70.000000(35/50)
+class 8: [3, 0, 2, 0, 1, 0, 3, 1, 40, 0]        accuracy: 80.000000(40/50)
+class 9: [0, 1, 2, 0, 0, 5, 0, 0, 0, 42]        accuracy: 84.000000(42/50)
+[*] Test finished
+
+(SSS) C:\Users\405B\KFC>python main.py --comment cross_validation_test_with_large_data --dataroot_dir ./data_clean_samenum --epoch 30 --batch_size 100 --type test --fold_num 3
+comment: cross_validation_test_with_large_data
+model and loss plot -> ./model/model_cross_validation_test_with_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='cross_validation_test_with_large_data', dataroot_dir='./data_clean_samenum', epoch=30, fold_num=3, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.011837 Accuracy: 406/497 (81.690141)
+error tracking
+class 0: [37, 0, 0, 0, 3, 0, 1, 4, 3, 0]        accuracy: 77.083333(37/48)
+class 1: [0, 43, 3, 0, 3, 0, 0, 1, 0, 0]        accuracy: 86.000000(43/50)
+class 2: [0, 1, 44, 0, 0, 2, 1, 1, 1, 0]        accuracy: 88.000000(44/50)
+class 3: [2, 1, 0, 42, 3, 0, 1, 0, 1, 0]        accuracy: 84.000000(42/50)
+class 4: [5, 0, 0, 0, 42, 0, 1, 0, 2, 0]        accuracy: 84.000000(42/50)
+class 5: [2, 0, 1, 4, 0, 38, 1, 1, 0, 3]        accuracy: 76.000000(38/50)
+class 6: [1, 0, 4, 2, 2, 3, 36, 1, 0, 0]        accuracy: 73.469388(36/49)
+class 7: [0, 1, 4, 0, 1, 0, 2, 40, 2, 0]        accuracy: 80.000000(40/50)
+class 8: [4, 0, 2, 0, 1, 0, 1, 1, 41, 0]        accuracy: 82.000000(41/50)
+class 9: [0, 1, 1, 0, 0, 5, 0, 0, 0, 43]        accuracy: 86.000000(43/50)
+[*] Test finished
+
+(SSS) C:\Users\405B\KFC>python main.py --comment cross_validation_test_with_large_data --dataroot_dir ./data_clean_samenum --epoch 30 --batch_size 100 --type test --fold_num 4
+comment: cross_validation_test_with_large_data
+model and loss plot -> ./model/model_cross_validation_test_with_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='cross_validation_test_with_large_data', dataroot_dir='./data_clean_samenum', epoch=30, fold_num=4, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.013726 Accuracy: 380/497 (76.458753)
+error tracking
+class 0: [41, 0, 1, 0, 1, 0, 0, 4, 1, 0]        accuracy: 85.416667(41/48)
+class 1: [0, 40, 5, 1, 3, 0, 0, 1, 0, 0]        accuracy: 80.000000(40/50)
+class 2: [0, 1, 43, 1, 1, 2, 2, 0, 0, 0]        accuracy: 86.000000(43/50)
+class 3: [2, 0, 1, 39, 2, 1, 1, 0, 3, 1]        accuracy: 78.000000(39/50)
+class 4: [7, 0, 0, 0, 40, 0, 1, 0, 2, 0]        accuracy: 80.000000(40/50)
+class 5: [1, 2, 1, 2, 0, 38, 1, 0, 0, 5]        accuracy: 76.000000(38/50)
+class 6: [6, 0, 5, 1, 3, 2, 31, 1, 0, 0]        accuracy: 63.265306(31/49)
+class 7: [0, 5, 8, 2, 2, 0, 2, 30, 1, 0]        accuracy: 60.000000(30/50)
+class 8: [8, 0, 1, 0, 2, 1, 2, 2, 34, 0]        accuracy: 68.000000(34/50)
+class 9: [0, 1, 1, 0, 0, 4, 0, 0, 0, 44]        accuracy: 88.000000(44/50)
+[*] Test finished
+
+(SSS) C:\Users\405B\KFC>python main.py --comment cross_validation_test_with_large_data --dataroot_dir ./data_clean_samenum --epoch 30 --batch_size 100 --type test --fold_num 5
+comment: cross_validation_test_with_large_data
+model and loss plot -> ./model/model_cross_validation_test_with_large_data
+Namespace(batch_size=100, beta1=0.5, beta2=0.999, comment='cross_validation_test_with_large_data', dataroot_dir='./data_clean_samenum', epoch=30, fold_num=5, gpu_mode=True, lr=0.0002, num_workers=4, result_dir='./results/', sample_num=64, save_dir='./model/', type='test')
+[*] Test started
+Average loss: 0.011705 Accuracy: 391/497 (78.672032)
+error tracking
+class 0: [37, 0, 1, 0, 1, 0, 3, 3, 3, 0]        accuracy: 77.083333(37/48)
+class 1: [0, 42, 3, 0, 4, 0, 0, 1, 0, 0]        accuracy: 84.000000(42/50)
+class 2: [0, 0, 44, 0, 1, 2, 0, 2, 1, 0]        accuracy: 88.000000(44/50)
+class 3: [2, 1, 0, 44, 2, 0, 0, 0, 1, 0]        accuracy: 88.000000(44/50)
+class 4: [7, 0, 0, 0, 36, 0, 1, 0, 6, 0]        accuracy: 72.000000(36/50)
+class 5: [2, 0, 1, 5, 1, 36, 0, 0, 0, 5]        accuracy: 72.000000(36/50)
+class 6: [4, 0, 6, 1, 2, 3, 30, 1, 1, 1]        accuracy: 61.224490(30/49)
+class 7: [0, 2, 5, 0, 0, 0, 2, 37, 3, 1]        accuracy: 74.000000(37/50)
+class 8: [4, 0, 0, 0, 2, 0, 1, 2, 40, 1]        accuracy: 80.000000(40/50)
+class 9: [0, 0, 0, 0, 0, 5, 0, 0, 0, 45]        accuracy: 90.000000(45/50)
+[*] Test finished
