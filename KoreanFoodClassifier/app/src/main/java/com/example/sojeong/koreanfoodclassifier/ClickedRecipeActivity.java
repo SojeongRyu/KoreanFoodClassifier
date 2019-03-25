@@ -39,7 +39,7 @@ public class ClickedRecipeActivity extends Activity {
             if (tempName.equals(foodName)) {
                 foodId = iCursor.getString(iCursor.getColumnIndex("foodId"));
                 ImageView imageView = (ImageView)findViewById(R.id.foodImg);
-                String foodImgName = "food00" + foodId;
+                String foodImgName = "food" + String.format("%03d", Integer.parseInt(foodId.trim()));
                 imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
                 foodIngredients = iCursor.getString(iCursor.getColumnIndex("foodIngredients"));
                 foodIngredientsEdit = (TextView) this.findViewById(R.id.foodIngredients);

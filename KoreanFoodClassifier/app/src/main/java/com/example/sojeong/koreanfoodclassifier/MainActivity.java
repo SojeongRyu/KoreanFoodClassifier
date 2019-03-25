@@ -229,14 +229,14 @@ public class MainActivity extends AppCompatActivity {
             imgFile = new File(Environment.getExternalStorageDirectory() + img.getPath());
 
         TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, imgFile);
-        tcp_client.startTCP(false, 0);
+        tcp_client.startTCP("");
 
         albumURI = null;
         photoURI = null;
         mCurrentPhotoPath = null;
         isAlbum = false;
 
-        Intent intent = new Intent(getApplicationContext(), OutputActivity.class);
+        Intent intent = new Intent(getApplicationContext(), listviewTestActivity.class);
         startActivity(intent);
     }
 

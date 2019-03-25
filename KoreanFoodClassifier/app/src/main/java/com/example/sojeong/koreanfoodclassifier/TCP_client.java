@@ -25,17 +25,16 @@ import java.util.HashMap;
 
 public class TCP_client implements Runnable{
     private static Socket socket = null;
-    private DataOutputStream[] dataOutput = new DataOutputStream[4];;
+    private DataOutputStream[] dataOutput = new DataOutputStream[2];
     private DataInputStream dataInput = null;
     private  BufferedReader bufferedReader = null;
     private int BUF_SIZE = 1024;
     private String serverIp;
     private int serverPort;
     private File img;
-    static int noCnt = 0;
-    private boolean isYes = false;
+    private String response;
 
-    static HashMap<String, String> recipe_ko, recipe_en;
+    static HashMap<String, String> recipe_ko1, recipe_ko2, recipe_en1, recipe_en2;
 
     public TCP_client(String serverIp, int serverPort, File img) {
         super();
@@ -44,9 +43,9 @@ public class TCP_client implements Runnable{
         this.img = img;
     }
 
-    public void startTCP(boolean isYes, int noCnt) {
-        this.isYes = isYes;
-        this.noCnt = noCnt;
+    public void startTCP(String response) {
+        this.response = response;
+
         Thread thread = new Thread(this);
         thread.start();
         try {
@@ -60,20 +59,12 @@ public class TCP_client implements Runnable{
             if (socket == null)
                 socket = new Socket(serverAddr, serverPort);
             try {
-                if (isYes) {
-                    sendUserResponse("Y", 1);
-                    finishConnection();
-                }
-                else if (noCnt == 0 ) {
+                if (response.length() == 0) {
                     sendImg();
                     recvRecipe();
                 }
-                else if (noCnt == 1) {
-                    sendUserResponse("N", 2);
-                    recvRecipe();
-                }
-                else if (noCnt == 2) {
-                    sendUserResponse("N", 3);
+                else {
+                    sendUserResponse(response);
                     finishConnection();
                 }
 
@@ -86,11 +77,11 @@ public class TCP_client implements Runnable{
 
     }
 
-    private void sendUserResponse(String response, int outputStreamNum) {
+    private void sendUserResponse(String response) {
         try {
-            dataOutput[outputStreamNum] = new DataOutputStream(socket.getOutputStream());
+            dataOutput[1] = new DataOutputStream(socket.getOutputStream());
             byte[] buf = response.getBytes();
-            dataOutput[outputStreamNum].write(buf, 0, 1);
+            dataOutput[1].write(buf, 0, response.length());
         } catch (Exception e) {
             Log.e("sendUserResponse", e.toString());
         }
@@ -124,32 +115,54 @@ public class TCP_client implements Runnable{
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "CP949"));
             String recv;
-            recipe_ko = new HashMap<String, String>();
-            recipe_en = new HashMap<String, String>();
+            recipe_ko1 = new HashMap<String, String>();
+            recipe_ko2 = new HashMap<String, String>();
+            recipe_en1 = new HashMap<String, String>();
+            recipe_en2 = new HashMap<String, String>();
             String[] tokens = {"food id", "predict percentage", "food name", "food ingredients", "food preparation", "food cooking", "food name", "food krName", "food ingredients", "food preparation", "food cooking"};
-            for (int i = 0; i < 6; i++)
-                recipe_ko.put(tokens[i], "");
-            for (int i = 6; i < tokens.length; i++)
-                recipe_en.put(tokens[i], "");
+            for (int i = 0; i < 6; i++) {
+                recipe_ko1.put(tokens[i], "");
+                recipe_ko2.put(tokens[i], "");
+            }
+            for (int i = 6; i < tokens.length; i++) {
+                recipe_en1.put(tokens[i], "");
+                recipe_en2.put(tokens[i], "");
+            }
             int i = 0;
             while(!(recv = bufferedReader.readLine().trim()).equals("recipe_en")) {
                 if (recv.equals(tokens[i])) {
                     i++;
                     continue;
                 }
-                String tmp = recipe_ko.get(tokens[i]);
-                recipe_ko.put(tokens[i], tmp + recv + "\r\n");
+                String tmp = recipe_ko1.get(tokens[i]);
+                recipe_ko1.put(tokens[i], tmp + recv + "\r\n");
             }
             while(!(recv = bufferedReader.readLine().trim()).equals("recipe_done")) {
                 if (recv.equals(tokens[i])) {
                     i++;
                     continue;
                 }
-                String tmp = recipe_en.get(tokens[i]);
-                recipe_en.put(tokens[i], tmp + recv + "\r\n");
+                String tmp = recipe_en1.get(tokens[i]);
+                recipe_en1.put(tokens[i], tmp + recv + "\r\n");
             }
-            Log.e("recipe_ko", recipe_ko.toString());
-            Log.e("recipe_en", recipe_en.toString());
+
+            i = 0;
+            while(!(recv = bufferedReader.readLine().trim()).equals("recipe_en")) {
+                if (recv.equals(tokens[i])) {
+                    i++;
+                    continue;
+                }
+                String tmp = recipe_ko2.get(tokens[i]);
+                recipe_ko2.put(tokens[i], tmp + recv + "\r\n");
+            }
+            while(!(recv = bufferedReader.readLine().trim()).equals("recipe_done")) {
+                if (recv.equals(tokens[i])) {
+                    i++;
+                    continue;
+                }
+                String tmp = recipe_en2.get(tokens[i]);
+                recipe_en2.put(tokens[i], tmp + recv + "\r\n");
+            }
         } catch (Exception e) {
             Log.e("recvImg", e.toString());
         }
@@ -159,7 +172,7 @@ public class TCP_client implements Runnable{
         try {
             if (dataInput != null)
                 dataInput.close();
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 2; i++) {
                 if (dataOutput[i] != null)
                     dataOutput[i].close();
             }

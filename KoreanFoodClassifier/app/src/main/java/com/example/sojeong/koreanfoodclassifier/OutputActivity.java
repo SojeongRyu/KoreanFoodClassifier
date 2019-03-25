@@ -2,15 +2,22 @@ package com.example.sojeong.koreanfoodclassifier;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -26,14 +33,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.channels.Selector;
 import java.util.*;
 import android.widget.TextView;
 
 import android.util.Log;
 
 public class OutputActivity extends Activity {
+    /*
     HashMap<String ,String> recipe_ko = TCP_client.recipe_ko;
     HashMap<String ,String> recipe_en = TCP_client.recipe_en;
+    */
     private ImageView img;
     private int no_cnt = 0;
     private CheckBox liked;
@@ -41,13 +51,30 @@ public class OutputActivity extends Activity {
     private String foodId, foodName, foodIngredients, foodPreparation, foodCooking;
     String[] tokens = {"food name", "food ingredients", "food preparation", "food cooking", "food krName", "food id", "predict percentage"};
 
+    HashMap<String ,String> recipe_ko;
+    HashMap<String ,String> recipe_en;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_output_display);
-        img = (ImageView)findViewById(R.id.dialog_img);
-        String dialog_foodID = recipe_ko.get(tokens[5]);
-        dialog_show(dialog_foodID);
 
+        Intent intent = getIntent();
+
+        recipe_ko = (HashMap<String,String>)intent.getSerializableExtra("hash_ko");
+        recipe_en = (HashMap<String,String>)intent.getSerializableExtra("hash_en");
+        String dialog_foodID = recipe_ko.get(tokens[5]);
+
+        foodInfo_show(dialog_foodID);
+        Button btn = (Button)findViewById(R.id.exit_btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ifChecked_scrap();
+                Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
+                intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent2);
+            }
+        });
         mDbOpenHelper = new DbOpenHelper(this);
         mDbOpenHelper.open();
         mDbOpenHelper.create();
@@ -58,7 +85,8 @@ public class OutputActivity extends Activity {
     void foodInfo_show(String foodId) {
         final String systemLanguage = Locale.getDefault().getLanguage();
         ImageView imageView = (ImageView)findViewById(R.id.foodImg);
-        String foodImgName = "food00" + foodId;
+        String foodImgName = "food" + String.format("%03d", Integer.parseInt(foodId.trim()));
+        Log.e("foodImgName", getPackageName());
         imageView.setImageResource(getResources().getIdentifier(foodImgName.trim(),"drawable",getPackageName()));
         Log.e("foodImg","food00"+foodId);
 
@@ -159,72 +187,21 @@ public class OutputActivity extends Activity {
         sorry_dialog.show();
     }
 
-    void dialog_show(final String dialog_foodID){
-        Log.e("img", img.toString());
-        try {
-            if (img.getParent() != null)
-                ((ViewGroup) img.getParent()).removeView(img);
-        } catch (Exception e) {
-            Log.e("img.getParent()", e.toString());
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this).setView(img);
-        //setContentView(R.layout.check_img);
-        builder.setCancelable(false);
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Toast.makeText(getApplicationContext(),"Thank you", Toast.LENGTH_LONG).show();
-            }
-        });
-        String firstImageName = "food00"+dialog_foodID;
-        img.setImageResource(getResources().getIdentifier(firstImageName.trim(),"drawable",getPackageName()));
-        builder.setMessage("I think your picture is " + TCP_client.recipe_ko.get(tokens[6]).trim() + " this food. Is it right?");
-        builder.setPositiveButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(no_cnt == 0){
-                    no_cnt++;
-                    sendResponse(false, no_cnt);
-                    dialog.dismiss();
-                    recipe_ko = TCP_client.recipe_ko;
-                    recipe_en = TCP_client.recipe_en;
-                    String new_dialog_foodID = recipe_ko.get(tokens[5]);
-                    dialog_show(new_dialog_foodID);
-                }
-                else {
-                    no_cnt++;
-                    sendResponse(false, no_cnt);
-                    sorry_dialog();
-                }
-            }
-        });
-        builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                sendResponse(true, no_cnt);
-                dialog.dismiss();
-                foodInfo_show(dialog_foodID);
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-        //builder.show();
-    }
-
-    private void sendResponse(boolean isYes, int noCnt) {
-        TCP_client tcp_client = new TCP_client("203.153.146.10", 16161, null);
-        tcp_client.startTCP(isYes, noCnt);
-    }
-
     public void onBackBtnClicked(View v){
         ifChecked_scrap();
+        Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent2);
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         ifChecked_scrap();
+        Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent2);
+        super.onBackPressed();
     }
 
     public void ifChecked_scrap() {
